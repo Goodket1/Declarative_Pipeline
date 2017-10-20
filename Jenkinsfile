@@ -19,10 +19,14 @@ pipeline {
             }
         }        
         stage('docker') {
+            steps{
+                script {
                 withDockerRegistry([credentialsId: 'redii-e.joe', url: 'https://sds.redii.net']) {
                     def app = docker.build("sds.redii.net/e-joe/spring-pet-clinic-demo:v1",'.')
                     app.push()
                 }
+                }    
+            }
         }
     }
 }
