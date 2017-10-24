@@ -9,15 +9,15 @@ pipeline{
      maven 'm3'
    }
    environment {
-      def server = Artifactory.newServer url: 'http://10.5.0.12:8081/artifactory/', username: 'admin', password: 'password'
-      buildInfo = Artifactory.newBuildInfo()
       def workspace = pwd()
       def tomcat_path = '/opt/tomcat/webapps/ROOT/'
+
 
       // Servers
       slave = '10.5.0.14'
       QA_server = '10.5.0.15'
       artifactory_server = 'http://10.5.0.12:8081/artifactory/'
+      http_server = "http://${slave}:8080/${env.BUILD_NUMBER}"
    }
  stages{
     stage('checkout SCM'){
@@ -45,14 +45,6 @@ pipeline{
        dir( 'app' ) {
            script {
                 sh 'mvn clean install'
-//                def server = Artifactory.newServer url: 'http://10.5.0.12:8081/artifactory/', username: 'admin', password: 'password'
-//                def rtMaven = Artifactory.newMavenBuild()
-//                rtMaven.resolver server: server, releaseRepo: 'web_app', snapshotRepo: 'web_app'
-//                rtMaven.deployer server: server, releaseRepo: 'web_app', snapshotRepo: 'web_app'
-//                rtMaven.tool = 'm3'
-//                def buildInfo = rtMaven.run pom: 'pom.xml', goals: 'clean install'
-//                buildInfo.env.capture = true
-//                server.publishBuildInfo buildInfo
                 def pom = readMavenPom file: 'pom.xml'
                 id = pom.artifactId
                 version = pom.version
@@ -60,5 +52,15 @@ pipeline{
        }
     }
    }
+   stage ('Test if get 200 Ok'){
+     steps{
+        script{
+           sh "unzip ${env.workspace}/app/target/${id}-${version}.war -d  ${env.tomcat_path}${env.BUILD_NUMBER}/"
+           def response = httpRequest env.http_server
+           println("Status: "+response.status)
+        }
+     }
+   }
+
  }
 }
