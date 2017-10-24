@@ -1,5 +1,5 @@
 pipeline{
- agent any
+ agent CI_env
    tools {
      maven 'm3'
    }
