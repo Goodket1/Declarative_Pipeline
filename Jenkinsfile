@@ -59,10 +59,10 @@ pipeline{
            def response = httpRequest env.http_server
            println("Status: "+response.status)
            def server = Artifactory.newServer url: 'http://10.5.0.12:8081/artifactory/', username: 'admin', password: 'password'
-            def rtMaven = Artifactory.newMavenBuild()
-            rtMaven.resolver server: server, releaseRepo: 'example-repo-local', snapshotRepo: 'example-repo-local'
-            rtMaven.deployer server: server, releaseRepo: 'example-repo-local', snapshotRepo: 'example-repo-local'
-            rtMaven.tool = 'm3'
+           def rtMaven = Artifactory.newMavenBuild()
+           rtMaven.tool = 'm3'
+           rtMaven.resolver server: server, releaseRepo: 'example-repo-local', snapshotRepo: 'example-repo-local'
+           rtMaven.deployer server: server, releaseRepo: 'example-repo-local', snapshotRepo: 'example-repo-local'
             def buildInfo = rtMaven.run pom: 'pom.xml', goals: 'deploy'
                   }
     }
