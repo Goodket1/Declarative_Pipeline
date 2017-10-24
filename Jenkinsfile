@@ -44,12 +44,13 @@ pipeline{
       steps{
        dir( 'app' ) {
            script {
+                sh 'mvn clean verify'
                 def server = Artifactory.newServer url: 'http://10.5.0.12:8081/artifactory/', username: 'admin', password: 'password'
                 def rtMaven = Artifactory.newMavenBuild()
                 rtMaven.resolver server: server, releaseRepo: 'web_app', snapshotRepo: 'web_app'
                 rtMaven.deployer server: server, releaseRepo: 'web_app', snapshotRepo: 'web_app'
                 rtMaven.tool = 'm3'
-                def buildInfo = rtMaven.run pom: 'pom.xml', goals: 'install'
+                def buildInfo = rtMaven.run pom: 'pom.xml', goals: 'clean install'
                 buildInfo.env.capture = true
                 server.publishBuildInfo buildInfo
                 def pom = readMavenPom file: 'pom.xml'
