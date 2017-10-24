@@ -53,16 +53,15 @@ pipeline{
        }
     }
    }
-   stage ('Test if get 200 Ok'){
-     steps{
-        script{
-           sh "unzip ${env.workspace}/app/target/${id}-${version}.war -d  ${env.tomcat_path}${env.BUILD_NUMBER}/"
-           def response = httpRequest env.http_server
-           println("Status: "+response.status)
-
-        }
-     }
-   }
+//   stage ('Test if get 200 Ok'){
+//    steps{
+//        script{
+//           sh "unzip ${env.workspace}/app/target/${id}-${version}.war -d  ${env.tomcat_path}${env.BUILD_NUMBER}/"
+//           def response = httpRequest env.http_server
+//           println("Status: "+response.status)
+//        }
+//    }
+//   }
 
  }
 }
