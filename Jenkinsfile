@@ -11,7 +11,7 @@ pipeline{
    environment {
       def workspace = pwd()
       def tomcat_path = '/opt/tomcat/webapps/ROOT/'
-
+      def server = Artifactory.newServer url: 'http://10.5.0.12:8081/artifactory/', username: 'admin', password: 'password'
 
       // Servers
       slave = '10.5.0.14'
@@ -45,10 +45,6 @@ pipeline{
        dir( 'app' ) {
            script {
                 sh 'mvn clean install'
-                    configFileProvider(
-                     [configFile(fileId: 'bb69bc1a-f3cd-4af9-a106-551e55851850', variable: 'MAVEN_SETTINGS')]) {
-                       sh 'mvn -s $MAVEN_SETTINGS deploy'
-                     }
                 def pom = readMavenPom file: 'pom.xml'
                 id = pom.artifactId
                 version = pom.version
@@ -56,15 +52,20 @@ pipeline{
        }
     }
    }
-//   stage ('Test if get 200 Ok'){
-//    steps{
-//        script{
-//           sh "unzip ${env.workspace}/app/target/${id}-${version}.war -d  ${env.tomcat_path}${env.BUILD_NUMBER}/"
-//           def response = httpRequest env.http_server
-//           println("Status: "+response.status)
-//        }
-//    }
-//   }
+   stage ('Test if get 200 Ok'){
+    steps{
+        script{
+           sh "unzip ${env.workspace}/app/target/${id}-${version}.war -d  ${env.tomcat_path}${env.BUILD_NUMBER}/"
+           def response = httpRequest env.http_server
+           println("Status: "+response.status)
+            def rtMaven = Artifactory.newMavenBuild()
+            rtMaven.resolver server: server, releaseRepo: 'example-repo-local', snapshotRepo: 'example-repo-local'
+            rtMaven.deployer server: server, releaseRepo: 'example-repo-local', snapshotRepo: 'example-repo-local'
+            rtMaven.tool = 'm3'
+            def buildInfo = rtMaven.run pom: 'pom.xml', goals: 'deploy'
+                  }
+    }
+   }
 
  }
 }
