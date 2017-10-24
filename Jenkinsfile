@@ -11,7 +11,7 @@ pipeline{
    environment {
       def workspace = pwd()
       def tomcat_path = '/opt/tomcat/webapps/ROOT/'
-      def server = Artifactory.newServer url: 'http://10.5.0.12:8081/artifactory/', username: 'admin', password: 'password'
+
 
       // Servers
       slave = '10.5.0.14'
@@ -58,6 +58,7 @@ pipeline{
            sh "unzip ${env.workspace}/app/target/${id}-${version}.war -d  ${env.tomcat_path}${env.BUILD_NUMBER}/"
            def response = httpRequest env.http_server
            println("Status: "+response.status)
+           def server = Artifactory.newServer url: 'http://10.5.0.12:8081/artifactory/', username: 'admin', password: 'password'
             def rtMaven = Artifactory.newMavenBuild()
             rtMaven.resolver server: server, releaseRepo: 'example-repo-local', snapshotRepo: 'example-repo-local'
             rtMaven.deployer server: server, releaseRepo: 'example-repo-local', snapshotRepo: 'example-repo-local'
