@@ -1,5 +1,10 @@
 pipeline{
- agent CI_env
+ agent {
+    node {
+        label 'CI_env'
+        customWorkspace '/var/jenkins'
+    }
+ }
    tools {
      maven 'm3'
    }
@@ -41,8 +46,8 @@ pipeline{
            script {
                 def server = Artifactory.newServer url: 'http://10.5.0.12:8081/artifactory/', username: 'admin', password: 'password'
                 def rtMaven = Artifactory.newMavenBuild()
-                rtMaven.resolver server: server, releaseRepo: example-repo-local, snapshotRepo: example-repo-local
-                rtMaven.deployer server: server, releaseRepo: example-repo-local, snapshotRepo: example-repo-local
+                rtMaven.resolver server: server, releaseRepo: 'example-repo-local', snapshotRepo: 'example-repo-local'
+                rtMaven.deployer server: server, releaseRepo: 'example-repo-local', snapshotRepo: 'example-repo-local'
                 rtMaven.tool = 'm3'
                 def buildInfo = rtMaven.run pom: 'pom.xml', goals: 'install'
                 buildInfo.env.capture = true
