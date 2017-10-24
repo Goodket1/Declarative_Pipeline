@@ -45,7 +45,10 @@ pipeline{
        dir( 'app' ) {
            script {
                 sh 'mvn clean install'
-                sh "mvn deploy"
+                    configFileProvider(
+                     [configFile(fileId: 'MyGlobalSettings', variable: 'MAVEN_SETTINGS')]) {
+                       sh 'mvn -s $MAVEN_SETTINGS deploy'
+                     }
                 def pom = readMavenPom file: 'pom.xml'
                 id = pom.artifactId
                 version = pom.version
