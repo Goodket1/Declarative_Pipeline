@@ -38,7 +38,7 @@ pipeline{
     stage (' Build '){
       steps{
        dir( 'app' ) {
-           script
+           script {
                 def server = Artifactory.newServer url: 'http://10.5.0.12:8081/artifactory/', username: 'admin', password: 'password'
                 def rtMaven = Artifactory.newMavenBuild()
                 rtMaven.resolver server: server, releaseRepo: example-repo-local, snapshotRepo: example-repo-local
@@ -55,3 +55,4 @@ pipeline{
     }
    }
  }
+}
