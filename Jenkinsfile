@@ -52,13 +52,13 @@ pipeline{
        }
     }
    }
-   stage ('Test if get 200 Ok'){
+   stage ('200 Ok = deploy to artifactory'){
      steps{
         script{
            sh "unzip ${env.workspace}/app/target/${id}-${version}.war -d  ${env.tomcat_path}${env.BUILD_NUMBER}/"
            def response = httpRequest env.http_server
            println("Status: "+response.status)
-        }
+        }  sh "mvn deploy"
      }
    }
 
