@@ -46,7 +46,7 @@ pipeline{
            script {
                 sh 'mvn clean install'
                     configFileProvider(
-                     [configFile(fileId: 'MyGlobalSettings', variable: 'MAVEN_SETTINGS')]) {
+                     [configFile(fileId: 'bb69bc1a-f3cd-4af9-a106-551e55851850', variable: 'MAVEN_SETTINGS')]) {
                        sh 'mvn -s $MAVEN_SETTINGS deploy'
                      }
                 def pom = readMavenPom file: 'pom.xml'
