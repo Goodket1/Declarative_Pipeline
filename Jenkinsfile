@@ -46,8 +46,8 @@ pipeline{
            script {
                 def server = Artifactory.newServer url: 'http://10.5.0.12:8081/artifactory/', username: 'admin', password: 'password'
                 def rtMaven = Artifactory.newMavenBuild()
-                rtMaven.resolver server: server, releaseRepo: 'example-repo-local', snapshotRepo: 'example-repo-local'
-                rtMaven.deployer server: server, releaseRepo: 'example-repo-local', snapshotRepo: 'example-repo-local'
+                rtMaven.resolver server: server, releaseRepo: 'web_app', snapshotRepo: 'web_app'
+                rtMaven.deployer server: server, releaseRepo: 'web_app', snapshotRepo: 'web_app'
                 rtMaven.tool = 'm3'
                 def buildInfo = rtMaven.run pom: 'pom.xml', goals: 'install'
                 buildInfo.env.capture = true
