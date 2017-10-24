@@ -1,0 +1,45 @@
+version: '2'
+services:
+
+  jenkins:
+    mem_limit: 1024MB
+    image: "koretskyi2/jenkins:multi"
+    ports:
+      - "8090:8080"
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.11
+
+  artifactory:
+    image: "koretskyi2/artifactory"
+    mem_limit: 1024MB
+    ports:
+      - "8091:8081"
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.12
+
+  tomcat-slave:
+    image: "koretskyi2/tomcat"
+    mem_limit: 256MB
+    ports:
+      - "8092:8080"
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.14
+
+  tomcat-qa:
+    image: "koretskyi2/tomcat"
+    mem_limit: 256MB
+    ports:
+      - "8093:8080"
+    networks:
+      vpcbr:
+        ipv4_address: 10.5.0.15
+
+networks:
+  vpcbr:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 10.5.0.0/16
