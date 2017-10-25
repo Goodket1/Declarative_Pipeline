@@ -29,7 +29,7 @@
 				 <version>2.7</version>
             </plugin>
 		</plugins>
-		<finalName>${artifactId}-${version}</finalName>
+		<finalName>${project.artifactId}-${project.version}</finalName>
 	</build>
     <distributionManagement>
       <repository>
