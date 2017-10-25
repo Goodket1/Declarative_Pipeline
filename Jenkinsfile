@@ -11,13 +11,11 @@ pipeline{
    environment {
       def workspace = pwd()
       def tomcat_path = '/opt/tomcat/webapps/ROOT/'
-
-
-
       // Servers
       slave = '10.5.0.14'
       QA_server = '10.5.0.15'
       artifactory_server = 'http://10.5.0.12:8081/artifactory/'
+      reponame = 'snaphots'
       http_server = "http://${slave}:8080/${env.BUILD_NUMBER}"
    }
  stages{
@@ -68,6 +66,16 @@ pipeline{
       }
     }
    }
+    stage ('Deploy to Server'){
+      steps{
+         script {
+                ansiblePlaybook(
+                playbook: 'jenkins/deploy.yml',
+                inventory: 'jenkins/inventory',
+                extras: "-e version=${version} -e id=${id} -e artifactory=${artifactory_server} -e host=${QA_server} -e reponame=${reponame} -e build=${env.BUILD_NUMBER} -e path=${tomcat_path}")
+         }
+      }
+    }
 
  }
 }

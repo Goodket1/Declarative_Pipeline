@@ -1,39 +1,7 @@
----
-- hosts: '{{ host }}'
-  vars:
-    webapp_build: '{{ id}}-{{ version }}'
-    repo: '{{ reponame }}/com/efsavage/'
-    tomcat_app_base: '{{ path }}'
-    build: '{{build_number}}'
-
-  tasks:
-  - name: cleanup
-    file:
-      name: '{{ tomcat_app_base }}'
-      state: absent
-    tags:
-     - cleanup
-
-
-  - name: make dir
-    file:
-      name: '{{ tomcat_app_base }}/{{build}}'
-      state: directory
-      mode: 777
-    tags:
-     - mkdir
-
-  - name: download art
-    get_url:
-      url: '{{ artifactory }}{{ repo }}{{ id }}/{{ version }}/{{ webapp_build }}.war'
-      dest: '{{ tomcat_app_base }}/{{ webapp_build }}.war'
-    tags:
-     - download
-
-  - name: unpack
-    unarchive:
-      src: '{{ tomcat_app_base }}/{{ webapp_build }}.war'
-      dest: '{{ tomcat_app_base }}'
-      remote_src: yes
-    tags:
-     - unpack
+- name: QA
+  any_errors_fatal: true
+  hosts: '{{ host }}'
+  gather_facts: true
+  become: true
+  roles:
+    - QA
