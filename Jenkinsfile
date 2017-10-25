@@ -60,7 +60,7 @@ pipeline{
            println("Status: "+response.status)
            configFileProvider(
              [configFile(fileId: 'bb69bc1a-f3cd-4af9-a106-551e55851850', variable: 'MAVEN_SETTINGS')]) {
-                sh "mvn -s $MAVEN_SETTINGS deploy:deploy-file -Dfile=target/web_app-0.0.1-SNAPSHOT.war"
+                sh "mvn -s $MAVEN_SETTINGS deploy:deploy-file -Durl=${artifactory_server} -Dfile=target/web_app-0.0.1-SNAPSHOT.war"
               }
         }
       }
