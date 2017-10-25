@@ -11,6 +11,9 @@ pipeline{
    environment {
       def workspace = pwd()
       def tomcat_path = '/opt/tomcat/webapps/ROOT/'
+      def pom = readMavenPom file: 'pom.xml'
+      id = pom.artifactId
+      version = pom.version
 
 
       // Servers
