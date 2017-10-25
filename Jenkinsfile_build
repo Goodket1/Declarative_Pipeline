@@ -66,11 +66,7 @@ pipeline{
            def buildInfo = rtMaven.run pom: 'pom.xml', goals: 'install'
            buildInfo.env.capture = true
            server.publishBuildInfo buildInfo
-           def pom = readMavenPom file: 'pom.xml'
-           id = pom.artifactId
-           version = pom.version
-
-              }
+        }
         }
       }
     }
