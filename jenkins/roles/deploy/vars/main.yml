@@ -1,0 +1,4 @@
+webapp_build: '{{ id}}-{{ version }}'
+repo: '{{ reponame }}/com/efsavage/'
+tomcat_app_base: '{{ path }}'
+build: '{{build_number}}'
