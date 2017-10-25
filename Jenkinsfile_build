@@ -15,7 +15,7 @@ pipeline{
       slave = '10.5.0.14'
       QA_server = '10.5.0.15'
       artifactory_server = 'http://10.5.0.12:8081/artifactory/'
-      reponame = 'snaphots'
+      reponame = 'snapshots'
       http_server = "http://${slave}:8080/${env.BUILD_NUMBER}"
    }
  stages{
