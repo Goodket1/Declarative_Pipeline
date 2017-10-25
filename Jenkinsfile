@@ -11,9 +11,7 @@ pipeline{
    environment {
       def workspace = pwd()
       def tomcat_path = '/opt/tomcat/webapps/ROOT/'
-      def pom = readMavenPom file: 'pom.xml'
-      id = pom.artifactId
-      version = pom.version
+
 
 
       // Servers
@@ -54,7 +52,11 @@ pipeline{
    }
    stage ('Test if get 200 Ok'){
     steps{
+      dir( 'app' ) {
         script{
+           def pom = readMavenPom file: 'pom.xml'
+           id = pom.artifactId
+           version = pom.version
            sh "unzip ${env.workspace}/app/target/${id}-${version}.war -d  ${env.tomcat_path}${env.BUILD_NUMBER}/"
            def response = httpRequest env.http_server
            println("Status: "+response.status)
@@ -63,6 +65,7 @@ pipeline{
                 sh 'mvn -s $MAVEN_SETTINGS deploy'
               }
         }
+      }
     }
    }
 
