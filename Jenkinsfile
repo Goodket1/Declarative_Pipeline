@@ -69,10 +69,11 @@ pipeline{
     stage ('Deploy to Server'){
       steps{
          script {
-                ansiblePlaybook(
-                playbook: 'jenkins/deploy.yml',
-                inventory: 'jenkins/inventory',
-                extras: "-e version=${version} -e id=${id} -e artifactory=${artifactory_server} -e host=${QA_server} -e reponame=${reponame} -e build=${env.BUILD_NUMBER} -e path=${tomcat_path}")
+            sh "chmod 400 jenkins/id_rsa"
+            ansiblePlaybook(
+            playbook: 'jenkins/deploy.yml',
+            inventory: 'jenkins/inventory',
+            extras: "-e version=${version} -e id=${id} -e artifactory=${artifactory_server} -e host=${QA_server} -e reponame=${reponame} -e build=${env.BUILD_NUMBER} -e path=${tomcat_path}")
          }
       }
     }
