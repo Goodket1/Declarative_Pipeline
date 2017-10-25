@@ -45,26 +45,23 @@ pipeline{
        dir( 'app' ) {
            script {
                 sh 'mvn clean install'
-                    configFileProvider(
-                     [configFile(fileId: 'bb69bc1a-f3cd-4af9-a106-551e55851850', variable: 'MAVEN_SETTINGS')]) {
-                       sh 'mvn -s $MAVEN_SETTINGS deploy'
-                     }
-                def pom = readMavenPom file: 'pom.xml'
-                id = pom.artifactId
-                version = pom.version
            }
        }
     }
    }
-//   stage ('Test if get 200 Ok'){
-//    steps{
-//        script{
-//           sh "unzip ${env.workspace}/app/target/${id}-${version}.war -d  ${env.tomcat_path}${env.BUILD_NUMBER}/"
-//           def response = httpRequest env.http_server
-//           println("Status: "+response.status)
-//        }
-//    }
-//   }
+   stage ('Test if get 200 Ok'){
+    steps{
+        script{
+           configFileProvider(
+             [configFile(fileId: 'bb69bc1a-f3cd-4af9-a106-551e55851850', variable: 'MAVEN_SETTINGS')]) {
+                sh 'mvn -s $MAVEN_SETTINGS deploy'
+              }
+           sh "unzip ${env.workspace}/app/target/${id}-${version}.war -d  ${env.tomcat_path}${env.BUILD_NUMBER}/"
+           def response = httpRequest env.http_server
+           println("Status: "+response.status)
+        }
+    }
+   }
 
  }
 }
