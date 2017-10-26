@@ -36,7 +36,7 @@ pipeline{
       steps{
          script {
             sh "chmod 400 jenkins/id_rsa"
-//            echo var
+            echo version
 //            ansiblePlaybook(
 //            playbook: 'jenkins/deploy.yml',
 //            inventory: 'jenkins/inventory',
