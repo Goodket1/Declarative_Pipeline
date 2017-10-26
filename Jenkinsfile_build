@@ -62,8 +62,11 @@ pipeline{
              [configFile(fileId: 'bb69bc1a-f3cd-4af9-a106-551e55851850', variable: 'MAVEN_SETTINGS')]) {
                 sh "mvn -s $MAVEN_SETTINGS deploy -Dmaven.install.skip=true \
                 -Dmaven.compile.skip=true \
+                -Dmaven.testResources.skip=true \
+                -Dmaven.testCompile.skip=true \
                 -Dmaven.test.skip=true \
-                -Dmaven.package.skip=true"
+                -Dmaven.war.skip=true \
+                -Dmaven.install.skip=true"
               }
         }
       }
