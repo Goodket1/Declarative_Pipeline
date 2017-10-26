@@ -36,12 +36,12 @@ pipeline{
       steps{
          script {
             sh "chmod 400 jenkins/id_rsa"
-            echo env.list
-            ansiblePlaybook(
-            playbook: 'jenkins/deploy.yml',
-            inventory: 'jenkins/inventory',
-            extras: "-e version=${build} -e id=web_app -e artifactory=${artifactory_server} -e host=${QA_server} -e reponame=${reponame} -e build=${env.BUILD_NUMBER} -e path=${tomcat_path}"
-            )
+/            echo var
+/            ansiblePlaybook(
+/            playbook: 'jenkins/deploy.yml',
+/            inventory: 'jenkins/inventory',
+/            extras: "-e version=${build} -e id=web_app -e artifactory=${artifactory_server} -e host=${QA_server} -e reponame=${reponame} -e build=${env.BUILD_NUMBER} -e path=${tomcat_path}"
+/            )
          }
       }
     }
