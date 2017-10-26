@@ -63,7 +63,7 @@ pipeline{
                 sh "mvn -s $MAVEN_SETTINGS deploy:deploy-file -Durl=file:${artifactory_server}${reponame} \
                        -DrepositoryId=${reponame} \
                        -DgroupId=com.efsavage \
-                       -DartifactId=${id} \
+                       -DartifactId=${id}
               }
         }
       }
