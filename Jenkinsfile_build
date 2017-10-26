@@ -6,7 +6,7 @@ pipeline{
     }
  }
    tools {
-     maven Maven 3.3.9'
+     maven 'm3'
    }
    environment {
       def workspace = pwd()
