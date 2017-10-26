@@ -41,6 +41,7 @@ pipeline{
             inventory: 'jenkins/inventory',
             extras: "-e version=${version} -e id=web_app -e artifactory=${artifactory_server} -e host=${QA_server} -e reponame=${reponame} -e build=${env.BUILD_NUMBER} -e path=${tomcat_path}"
             )
+            input "Is build tested ?"
          }
       }
     }

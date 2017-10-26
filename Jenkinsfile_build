@@ -17,6 +17,7 @@ pipeline{
       artifactory_server = 'http://10.5.0.12:8081/artifactory/'
       reponame = 'snapshots'
       http_server = "http://${slave}:8080/${env.BUILD_NUMBER}"
+      localrepo = '/root/.m2/repository/'
    }
  stages{
     stage('checkout SCM'){
@@ -55,15 +56,16 @@ pipeline{
            version = pom.version
            groupId = pom.groupId
            packaging = pom.packaging
-//           sh "unzip ${env.workspace}/app/target/${id}-${version}.war -d  ${env.tomcat_path}${env.BUILD_NUMBER}/"
-//           def response = httpRequest env.http_server
-//           println("Status: "+response.status)
+           sh "cp -R ${localrepo}com/efsavage/${id}/${version} /tmp/"
+           sh "unzip ${env.workspace}/app/target/${id}-${version}.war -d  ${env.tomcat_path}${env.BUILD_NUMBER}/"
+           def response = httpRequest env.http_server
+           println("Status: "+response.status)
            configFileProvider(
               [configFile(fileId: 'bb69bc1a-f3cd-4af9-a106-551e55851850', variable: 'MAVEN_SETTINGS')]) {
-                 sh "mvn -s $MAVEN_SETTINGS deploy:deploy-file -DpomFile=</root/.m2/repository/com/efsavage/web_app/0.1.7-SNAPSHOT/web_app-0.1.7-SNAPSHOT.pom \
-                      -Dfile=/root/.m2/repository/com/efsavage/web_app/0.1.7-SNAPSHOT/web_app-0.1.7-SNAPSHOT.war \
-                      -DrepositoryId=snapshot \
-                      -Durl=http://10.17.11.223:8091/artifactory/snapshots"
+                 sh "mvn -s $MAVEN_SETTINGS deploy:deploy-file -DpomFile=/tmp/${version}/${id}-${version}.pom \
+                      -Dfile=/tmp/${version}/${id}-${version}.war \
+                      -DrepositoryId=${reponame} \
+                      -Durl=${artifactory_server}${reponame}"
               }
         }
       }
