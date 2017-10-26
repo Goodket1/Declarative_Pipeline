@@ -49,18 +49,25 @@ pipeline{
    stage ('If get 200 Ok Publish artifact'){
     steps{
       dir( 'app' ) {
-        configFileProvider(
-          [configFile(fileId: 'bb69bc1a-f3cd-4af9-a106-551e55851850', variable: 'MAVEN_SETTINGS')]) {
-                sh "mvn -s $MAVEN_SETTINGS deploy"
-              }
         script{
            def pom = readMavenPom file: 'pom.xml'
            id = pom.artifactId
            version = pom.version
-           sh "unzip ${env.workspace}/app/target/${id}-${version}.war -d  ${env.tomcat_path}${env.BUILD_NUMBER}/"
-           def response = httpRequest env.http_server
-           println("Status: "+response.status)
-
+           groupId = pom.groupId
+           packaging = pom.packaging
+//           sh "unzip ${env.workspace}/app/target/${id}-${version}.war -d  ${env.tomcat_path}${env.BUILD_NUMBER}/"
+//           def response = httpRequest env.http_server
+//           println("Status: "+response.status)
+           configFileProvider(
+              [configFile(fileId: 'bb69bc1a-f3cd-4af9-a106-551e55851850', variable: 'MAVEN_SETTINGS')]) {
+                 sh "mvn -s $MAVEN_SETTINGS deploy:deploy-file -DgroupId=${groupId} \
+                      -DartifactId=${id} \
+                      -Dversion=${version}> \
+                      -Dpackaging=${packaging} \
+                      -Dfile=${workspace}/app/target/ \
+                      -DrepositoryId=snapshot \
+                      -Durl=http://10.17.11.223:8091/artifactory/snapshots"
+              }
         }
       }
     }
