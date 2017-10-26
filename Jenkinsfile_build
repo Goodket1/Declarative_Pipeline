@@ -6,7 +6,7 @@ pipeline{
     }
  }
    tools {
-     maven 'm3'
+     maven ''Maven 3.3.9'
    }
    environment {
       def workspace = pwd()
@@ -42,15 +42,17 @@ pipeline{
     stage (' Build '){
       steps{
        dir( 'app' ) {
-           script {
                 sh 'mvn clean install'
-           }
        }
     }
    }
    stage ('If get 200 Ok Publish artifact'){
     steps{
       dir( 'app' ) {
+        configFileProvider(
+          [configFile(fileId: 'bb69bc1a-f3cd-4af9-a106-551e55851850', variable: 'MAVEN_SETTINGS')]) {
+                sh "mvn -s $MAVEN_SETTINGS deploy"
+              }
         script{
            def pom = readMavenPom file: 'pom.xml'
            id = pom.artifactId
@@ -58,10 +60,7 @@ pipeline{
            sh "unzip ${env.workspace}/app/target/${id}-${version}.war -d  ${env.tomcat_path}${env.BUILD_NUMBER}/"
            def response = httpRequest env.http_server
            println("Status: "+response.status)
-           configFileProvider(
-             [configFile(fileId: 'bb69bc1a-f3cd-4af9-a106-551e55851850', variable: 'MAVEN_SETTINGS')]) {
-                sh "mvn -s $MAVEN_SETTINGS deploy"
-              }
+
         }
       }
     }
