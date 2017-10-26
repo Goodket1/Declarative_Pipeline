@@ -7,16 +7,21 @@
 	<packaging>war</packaging>
 	<name>Hello World Web Application Repository</name>
 	<description>Simplest possible Java Webapp</description>
+
 	<distributionManagement>
-    <repository>
+      <repository>
+		<uniqueVersion>false</uniqueVersion>
         <id>central</id>
         <name>679307ab5c96-releases</name>
         <url>http://10.5.0.12:8081/artifactory/releases</url>
-    </repository>
+		<layout>default</layout>
+      </repository>
       <snapshotRepository>
+		<uniqueVersion>false</uniqueVersion>
         <id>snapshots</id>
         <name>679307ab5c96-snapshots</name>
         <url>http://10.5.0.12:8081/artifactory/snapshots</url>
+		<layout>default</layout>
       </snapshotRepository>
     </distributionManagement>
 	<build>
