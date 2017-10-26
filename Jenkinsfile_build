@@ -60,13 +60,9 @@ pipeline{
 //           println("Status: "+response.status)
            configFileProvider(
               [configFile(fileId: 'bb69bc1a-f3cd-4af9-a106-551e55851850', variable: 'MAVEN_SETTINGS')]) {
-                 sh "mvn -s $MAVEN_SETTINGS deploy:deploy-file -DgroupId=${groupId} \
-                      -DartifactId=${id} \
-                      -Dversion=${version}> \
-                      -Dpackaging=${packaging} \
-                      -Dfile=${workspace}/app/target/ \
+                 sh "mvn -s $MAVEN_SETTINGS deploy:deploy-file -DpomFile=</root/.m2/repository/com/efsavage/web_app/0.1.7-SNAPSHOT/web_app-0.1.7-SNAPSHOT.pom \
+                      -Dfile=/root/.m2/repository/com/efsavage/web_app/0.1.7-SNAPSHOT/web_app-0.1.7-SNAPSHOT.war \
                       -DrepositoryId=snapshot \
-                      -DgeneratePom=false \
                       -Durl=http://10.17.11.223:8091/artifactory/snapshots"
               }
         }
