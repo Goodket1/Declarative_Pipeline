@@ -5,4 +5,4 @@ metadata.versioning.versions.version.each{
   list.add(it)
 }
 return list.reverse(true)
-println list[0]
+println list
