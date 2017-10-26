@@ -66,6 +66,7 @@ pipeline{
                       -Dpackaging=${packaging} \
                       -Dfile=${workspace}/app/target/ \
                       -DrepositoryId=snapshot \
+                      -DgeneratePom=false \
                       -Durl=http://10.17.11.223:8091/artifactory/snapshots"
               }
         }
