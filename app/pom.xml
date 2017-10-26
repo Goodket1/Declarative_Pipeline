@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.efsavage</groupId>
 	<artifactId>web_app</artifactId>
-    <version>0.0.4-SNAPSHOT</version>
+    <version>0.1.4-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>Hello World Web Application Repository</name>
 	<description>Simplest possible Java Webapp</description>
@@ -15,7 +15,6 @@
         <name>679307ab5c96-releases</name>
         <url>http://10.5.0.12:8081/artifactory/releases</url>
 		<layout>default</layout>
-		<uniqueVersion>false</uniqueVersion>
       </repository>
       <snapshotRepository>
 		<uniqueVersion>false</uniqueVersion>
@@ -23,7 +22,6 @@
         <name>679307ab5c96-snapshots</name>
         <url>http://10.5.0.12:8081/artifactory/snapshots</url>
 		<layout>default</layout>
-		<uniqueVersion>false</uniqueVersion>
       </snapshotRepository>
     </distributionManagement>
 	<build>
