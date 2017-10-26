@@ -25,6 +25,7 @@
       </snapshotRepository>
     </distributionManagement>
 	<build>
+		 <finalName>${project.artifactId}-${project.version}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>
