@@ -60,13 +60,7 @@ pipeline{
            println("Status: "+response.status)
            configFileProvider(
              [configFile(fileId: 'bb69bc1a-f3cd-4af9-a106-551e55851850', variable: 'MAVEN_SETTINGS')]) {
-                sh "mvn -s $MAVEN_SETTINGS deploy:deploy-file -Durl=file:${artifactory_server}${reponame} \
-                       -DrepositoryId=${reponame} \
-                       -DgroupId=com.efsavage \
-                       -DartifactId=${id} \
-                       -Dversion=${version} \
-                       -DuniqueVersion=false \
-                       -Dfile=${workspace}/app/target/${id}-${version}.war"
+                sh "mvn -s $MAVEN_SETTINGS deploy"
               }
         }
       }
