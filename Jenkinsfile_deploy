@@ -15,8 +15,9 @@ pipeline{
       slave = '10.5.0.14'
       QA_server = '10.5.0.15'
       artifactory_server = 'http://10.5.0.12:8081/artifactory/'
-      reponame = 'snaphots'
+      reponame = 'snapshots'
       http_server = "http://${slave}:8080/${env.BUILD_NUMBER}"
+      localrepo = '/root/.m2/repository/'
    }
  stages{
     stage('checkout SCM'){
@@ -32,17 +33,28 @@ pipeline{
             '''
         }
     }
-    stage ('Deploy to Server'){
-      steps{
-         script {
-            sh "chmod 400 jenkins/id_rsa"
+//    stage ('Deploy to Server'){
+//      steps{
+//        script {
+//            sh "chmod 400 jenkins/id_rsa"
 //            ansiblePlaybook(
 //            playbook: 'jenkins/deploy.yml',
 //            inventory: 'jenkins/inventory',
 //            extras: "-e version=${version} -e id=web_app -e artifactory=${artifactory_server} -e host=${QA_server} -e reponame=${reponame} -e build=${env.BUILD_NUMBER} -e path=${tomcat_path}"
 //            )
-         }
+//            input "Is build tested ?"
+//         }
+//      }
+//    }
+    stage ('release artifact'){
+      steps{
+        dir('app'){
+           configFileProvider(
+             [configFile(fileId: 'bb69bc1a-f3cd-4af9-a106-551e55851850', variable: 'MAVEN_SETTINGS')]) {
+                 sh "mvn -Dmaven.repo.local=${localrepo}  -s $MAVEN_SETTINGS --batch-mode release:update-versions -DdevelopmentVersion=1.0.0-RELEASE"
+              }
+        }
       }
-    }
  }
+}
 }
