@@ -56,13 +56,13 @@ pipeline{
            version = pom.version
            groupId = pom.groupId
            packaging = pom.packaging
-           sh "cp -R ${localrepo}com/efsavage/${id}/${version} /tmp/"
-           sh "unzip ${env.workspace}/app/target/${id}-${version}.war -d  ${env.tomcat_path}${env.BUILD_NUMBER}/"
-           def response = httpRequest env.http_server
-           println("Status: "+response.status)
+//           sh "cp -R ${localrepo}com/efsavage/${id}/${version} /tmp/"
+//           sh "unzip ${env.workspace}/app/target/${id}-${version}.war -d  ${env.tomcat_path}${env.BUILD_NUMBER}/"
+//           def response = httpRequest env.http_server
+//           println("Status: "+response.status)
            configFileProvider(
               [configFile(fileId: 'bb69bc1a-f3cd-4af9-a106-551e55851850', variable: 'MAVEN_SETTINGS')]) {
-                 sh "mvn -s $MAVEN_SETTINGS deploy:deploy-file -DpomFile=/tmp/${version}/${id}-${version}.pom \
+                 sh "mvn -s $MAVEN_SETTINGS deploy:deploy-file -DpomFile=${version}/${id}-${version}.pom \
                       -Dfile=/tmp/${version}/${id}-${version}.war \
                       -DrepositoryId=${reponame} \
                       -Durl=${artifactory_server}${reponame}"
