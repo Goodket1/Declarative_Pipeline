@@ -5,9 +5,9 @@ pipeline{
         customWorkspace '/var/jenkins'
     }
  }
-   tools {
-     maven 'm3'
-   }
+//   tools {
+//     maven 'm3'
+//   }
    environment {
       def workspace = pwd()
       def tomcat_path = '/opt/tomcat/webapps/ROOT/'
