@@ -4,6 +4,6 @@ USER root
 ARG PACKAGE_VERSION
 RUN echo "${PACKAGE_VERSION}" >> /usr/local/tomcat/webapps/version.txt
 COPY project.war /tmp/project.war
-RUN rm -r /usr/local/tomcat/webapps/ROOT/* && unzip /tmp/project.war -d /usr/local/tomcat/webapps/ROOT/
+RUN rm -r /usr/local/tomcat/webapps/ROOT/* && cp  /tmp/project.war /usr/local/tomcat/webapps/ROOT/
 
 CMD ["catalina.sh", "run"]
