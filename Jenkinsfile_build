@@ -1,12 +1,12 @@
 pipeline{
 
- agent any
-//  {
-//    node any
-//     {   label 'CI_env'
-//        customWorkspace '/var/jenkins'
-//    }
-// }
+ //agent any
+  {
+    node any
+     {   label 'CI_env'
+        customWorkspace '/var/jenkins'
+    }
+ }
    tools {
      maven 'm3'
    }
@@ -49,7 +49,7 @@ pipeline{
        }
     }
    }
-   stage ('If get 200 Ok Publish artifact'){
+   stage ('Build Docker image with .war'){
     steps{
         script{
            def pom = readMavenPom file: 'app/pom.xml'
@@ -58,9 +58,10 @@ pipeline{
            groupId = pom.groupId
            packaging = pom.packaging
            sh "cp ${localrepo}/com/efsavage/${id}/${version}/${id}-${version}.war ../project.war"
+           newImage = docker.build("koretskyi2/web_app:${version}.${BUILD_NUMBER}")
            withDockerRegistry([credentialsId: 'artifactory', url: "http://35.188.126.81:8081/artifactory/"]) {
-                    def image = docker.build("koretskyi2/web_app:${version}")
-        }
+              newImage.push("koretskyi2/web_app:${version}.${BUILD_NUMBER}")
+           }
       }
 
    }
