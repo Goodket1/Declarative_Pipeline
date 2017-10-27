@@ -54,24 +54,13 @@ pipeline{
            id = "web_app"
            version = "0.1.10"
            sh "cp ${localrepo}/com/efsavage/${id}/${version}/${id}-${version}.war ./project.war"
-           withDockerRegistry([credentialsId: 'artifactory', url: "https:/artifactory.legsup.co.uk:8082/"]) {
-           def image = docker.build("artifactory.legsup.co.uk:8082/${id}:${version}.${BUILD_NUMBER}", "--build-arg PACKAGE_VERSION=${version} .")
-
-        }
+           newImage = docker.build("artifactory.legsup.co.uk:8082/${id}:${version}_${BUILD_NUMBER}")
+           withDockerRegistry([credentialsId: 'artifactory', url: "artifactory.legsup.co.uk:8082"]) {
+              newImage.push()
+           }
       }
 
    }
  }
-//    stage ('push Docker image'){
-//    steps{
-//        script{
-//              def server = Artifactory.newServer url: 'http://artifactory.legsup.co.uk:8082', username: 'admin', password: 'password'
-//    def artDocker= Artifactory.docker username: 'admin', password: 'Tf1cda11'
-//    def dockerInfo = artDocker.push 'hello-world:latest', 'docker'
-//    server.publishBuildInfo(dockerInfo)
-//      }
-
-//   }
-// }
 }
 }
