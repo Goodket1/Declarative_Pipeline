@@ -51,10 +51,8 @@ pipeline{
     steps{
         script{
            def pom = readMavenPom file: 'app/pom.xml'
-           id = pom.artifactId
-           version = pom.version
-           groupId = pom.groupId
-           packaging = pom.packaging
+           id = "web_app"
+           version = "0.1.9-SNAPSHOT"
            sh "cp ${localrepo}/com/efsavage/${id}/${version}/${id}-${version}.war ../project.war"
            newImage = docker.build("koretskyi2/web_app:${version}.${BUILD_NUMBER}")
            withDockerRegistry([credentialsId: 'artifactory', url: "http://35.188.126.81:8081/artifactory/"]) {
