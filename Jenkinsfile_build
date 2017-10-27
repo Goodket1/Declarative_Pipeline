@@ -62,7 +62,7 @@ pipeline{
                     def image = docker.build("koretskyi2/web_app:${version}-SNAPSHOT")
         }
       }
-    }
+
    }
  }
 }
