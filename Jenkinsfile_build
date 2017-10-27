@@ -52,7 +52,7 @@ pipeline{
    stage ('If get 200 Ok Publish artifact'){
     steps{
         script{
-           def pom = readMavenPom file: '/app/pom.xml'
+           def pom = readMavenPom file: 'app/pom.xml'
            id = pom.artifactId
            version = pom.version
            groupId = pom.groupId
