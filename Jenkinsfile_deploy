@@ -48,7 +48,7 @@ pipeline{
 //    }
     stage ('release artifact'){
       steps{
-        dir(app'){
+        dir('app'){
            configFileProvider(
              [configFile(fileId: 'bb69bc1a-f3cd-4af9-a106-551e55851850', variable: 'MAVEN_SETTINGS')]) {
                  sh "mvn -Dmaven.repo.local=${localrepo}  -s $MAVEN_SETTINGS --batch-mode release:update-versions -DdevelopmentVersion=1.0.0-RELEASE"
