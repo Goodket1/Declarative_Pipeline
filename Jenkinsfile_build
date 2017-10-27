@@ -17,7 +17,7 @@ pipeline{
       artifactory_server = 'http://10.5.0.12:8081/artifactory/'
       reponame = 'snapshots'
       http_server = "http://${slave}:8080/${env.BUILD_NUMBER}"
-      localrepo = '/root/.m2/repository/'
+      localrepo = '/var/m2/repository/'
    }
  stages{
     stage('checkout SCM'){
@@ -62,8 +62,8 @@ pipeline{
 //           println("Status: "+response.status)
            configFileProvider(
               [configFile(fileId: 'bb69bc1a-f3cd-4af9-a106-551e55851850', variable: 'MAVEN_SETTINGS')]) {
-                 sh "mvn -s $MAVEN_SETTINGS deploy:deploy-file -DpomFile=${version}/${id}-${version}.pom \
-                      -Dfile=/tmp/${version}/${id}-${version}.war \
+                 sh "mvn -s $MAVEN_SETTINGS deploy:deploy-file -DpomFile=${localrepo}/com/efsavage/${id}${version}/${id}-${version}.pom \
+                      -Dfile=${localrepo}/com/efsavage/${id}${version}/${id}-${version}.war \
                       -DrepositoryId=${reponame} \
                       -Durl=${artifactory_server}${reponame}"
               }
