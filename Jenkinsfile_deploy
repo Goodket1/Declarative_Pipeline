@@ -33,28 +33,28 @@ pipeline{
             '''
         }
     }
-    stage ('Deploy to Server'){
-      steps{
-         script {
-            sh "chmod 400 jenkins/id_rsa"
-            ansiblePlaybook(
-            playbook: 'jenkins/deploy.yml',
-            inventory: 'jenkins/inventory',
-            extras: "-e version=${version} -e id=web_app -e artifactory=${artifactory_server} -e host=${QA_server} -e reponame=${reponame} -e build=${env.BUILD_NUMBER} -e path=${tomcat_path}"
-            )
+//    stage ('Deploy to Server'){
+//      steps{
+//        script {
+//            sh "chmod 400 jenkins/id_rsa"
+//            ansiblePlaybook(
+//            playbook: 'jenkins/deploy.yml',
+//            inventory: 'jenkins/inventory',
+//            extras: "-e version=${version} -e id=web_app -e artifactory=${artifactory_server} -e host=${QA_server} -e reponame=${reponame} -e build=${env.BUILD_NUMBER} -e path=${tomcat_path}"
+//            )
 //            input "Is build tested ?"
-//            configFileProvider(
-//              [configFile(fileId: 'bb69bc1a-f3cd-4af9-a106-551e55851850', variable: 'MAVEN_SETTINGS')]) {
-//                 sh "mvn -s $MAVEN_SETTINGS deploy:deploy-file -DgroupId=com.efsavage \
-//                     -DartifactId=web_app \
-//                      -Dversion=${version} \
-//                      -Dpackaging=war \
-//                      -Dfile=/tmp/${version}/web_app-${version}.war  \
-//                      -DrepositoryId=central \
-//                      -Durl=${artifactory_server}releases"
-//              }
-         }
+//         }
+//      }
+//    }
+    stage ('release artifact'){
+      steps{
+        dir("/tmp/${version}"){
+           configFileProvider(
+             [configFile(fileId: 'bb69bc1a-f3cd-4af9-a106-551e55851850', variable: 'MAVEN_SETTINGS')]) {
+                 sh "mvn -s $MAVEN_SETTINGS --batch-mode release:update-versions -DdevelopmentVersion=1.0.0-RELEASE"
+              }
+        }
       }
-    }
  }
+}
 }
