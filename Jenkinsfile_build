@@ -55,7 +55,7 @@ pipeline{
            version = "0.1.10"
            sh "cp ${localrepo}/com/efsavage/${id}/${version}/${id}-${version}.war ./project.war"
            withDockerRegistry([credentialsId: 'artifactory', url: "https:/artifactory.legsup.co.uk:8082/"]) {
-           def image = docker.build("artifactory.legsup.co.uk:8082:${id}${version}.${BUILD_NUMBER}", "--build-arg PACKAGE_VERSION=${version} .")
+           def image = docker.build("artifactory.legsup.co.uk:8082:${id}", "--build-arg PACKAGE_VERSION=${version} .")
 
         }
       }
