@@ -51,7 +51,7 @@ pipeline{
    }
    stage ('If get 200 Ok Publish artifact'){
     steps{
-      dir( 'app/jenkins' ) {
+      dir( 'app' ) {
         script{
            def pom = readMavenPom file: 'pom.xml'
            id = pom.artifactId
