@@ -1,10 +1,12 @@
 pipeline{
- agent {
-    node {
-        label 'CI_env'
-        customWorkspace '/var/jenkins'
-    }
- }
+
+ agent any
+//  {
+//    node any
+//     {   label 'CI_env'
+//        customWorkspace '/var/jenkins'
+//    }
+// }
    tools {
      maven 'm3'
    }
