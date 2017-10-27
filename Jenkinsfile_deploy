@@ -51,7 +51,7 @@ pipeline{
         dir("${localrepo}/com/efsavage/web_app/${version}"){
            configFileProvider(
              [configFile(fileId: 'bb69bc1a-f3cd-4af9-a106-551e55851850', variable: 'MAVEN_SETTINGS')]) {
-                 sh "mvn -s $MAVEN_SETTINGS --batch-mode release:update-versions -DdevelopmentVersion=1.0.0-RELEASE"
+                 sh "mvn -Dmaven.repo.local=${localrepo}  -s $MAVEN_SETTINGS --batch-mode release:update-versions -DdevelopmentVersion=1.0.0-RELEASE"
               }
         }
       }
