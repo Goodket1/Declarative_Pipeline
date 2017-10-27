@@ -58,8 +58,8 @@ pipeline{
            groupId = pom.groupId
            packaging = pom.packaging
            sh "cp ${localrepo}/com/efsavage/${id}/${version}/${id}-${version}.war ../project.war"
-           withDockerRegistry([credentialsId: 'docker-registry-credentials', url: "https://hub.docker.com/"]) {
-                    def image = docker.build("koretskyi2/web_app:${version}-SNAPSHOT")
+           withDockerRegistry([credentialsId: 'artifactory', url: "http://35.188.126.81:8081/artifactory/"]) {
+                    def image = docker.build("koretskyi2/web_app:${version}")
         }
       }
 
