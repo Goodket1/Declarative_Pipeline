@@ -1,7 +1,5 @@
 pipeline{
-
- //agent any
-  {
+  agent  {
     node any
      {   label 'CI_env'
         customWorkspace '/var/jenkins'
