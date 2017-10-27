@@ -56,17 +56,9 @@ pipeline{
            version = pom.version
            groupId = pom.groupId
            packaging = pom.packaging
-           sh "cp -R ${localrepo}com/efsavage/${id}/${version} /var/"
-//           sh "unzip ${env.workspace}/app/target/${id}-${version}.war -d  ${env.tomcat_path}${env.BUILD_NUMBER}/"
-//           def response = httpRequest env.http_server
-//           println("Status: "+response.status)
-           configFileProvider(
-              [configFile(fileId: 'bb69bc1a-f3cd-4af9-a106-551e55851850', variable: 'MAVEN_SETTINGS')]) {
-                 sh "mvn -s $MAVEN_SETTINGS deploy:deploy-file -DpomFile=/var/${version}/${id}-${version}.pom \
-                      -Dfile=/var//${version}/${id}-${version}.war \
-                      -DrepositoryId=${reponame} \
-                      -Durl=${artifactory_server}${reponame}"
-              }
+           sh "cp target/web_app-2.1.war ../project.war"
+           withDockerRegistry([credentialsId: 'docker-registry-credentials', url: "https://hub.docker.com/"]) {
+                    def image = docker.build("koretskyi2/web_app:${version}-SNAPSHOT")
         }
       }
     }
