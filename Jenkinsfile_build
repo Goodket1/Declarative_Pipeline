@@ -5,9 +5,9 @@ pipeline{
         customWorkspace '/var/jenkins'
     }
  }
-//   tools {
-//     maven 'm3'
-//   }
+   tools {
+     maven 'm3'
+   }
    environment {
       def workspace = pwd()
       def tomcat_path = '/opt/tomcat/webapps/ROOT/'
@@ -43,7 +43,7 @@ pipeline{
     stage (' Build '){
       steps{
        dir( 'app' ) {
-                sh 'mvn clean install'
+                sh 'mvn -Dmaven.repo.local=${localrepo} clean install'
        }
     }
    }
@@ -56,16 +56,16 @@ pipeline{
            version = pom.version
            groupId = pom.groupId
            packaging = pom.packaging
-//           sh "cp -R ${localrepo}com/efsavage/${id}/${version} /tmp/"
+           sh "cp -R ${localrepo}com/efsavage/${id}/${version} /var/"
 //           sh "unzip ${env.workspace}/app/target/${id}-${version}.war -d  ${env.tomcat_path}${env.BUILD_NUMBER}/"
 //           def response = httpRequest env.http_server
 //           println("Status: "+response.status)
            configFileProvider(
               [configFile(fileId: 'bb69bc1a-f3cd-4af9-a106-551e55851850', variable: 'MAVEN_SETTINGS')]) {
-                 sh "mvn -s $MAVEN_SETTINGS deploy:deploy-file -DpomFile=${localrepo}/com/efsavage/${id}${version}/${id}-${version}.pom \
-                      -Dfile=${localrepo}/com/efsavage/${id}${version}/${id}-${version}.war \
+                 sh "mvn -s $MAVEN_SETTINGS deploy:deploy-file -DpomFile=/var/${version}/${id}-${version}.pom \
+                      -Dfile=/var//${version}/${id}-${version}.war \
                       -DrepositoryId=${reponame} \
-                      -Durl=${artifactory_server}${reponame}"
+                      -Durl=${artifactory_server}${reponame} -e -X"
               }
         }
       }
