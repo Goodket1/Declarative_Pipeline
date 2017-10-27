@@ -17,7 +17,7 @@ pipeline{
       artifactory_server = 'http://10.5.0.12:8081/artifactory/'
       reponame = 'snapshots'
       http_server = "http://${slave}:8080/${env.BUILD_NUMBER}"
-      localrepo = '/var/lib/jenkins/.m2/repository/'
+      localrepo = '/roo/.m2/repository/'
    }
  stages{
     stage('checkout SCM'){
