@@ -57,7 +57,7 @@ pipeline{
            def dockerBuild = artDocker.build "artifactory.legsup.co.uk:8082/${id}:${version}_${BUILD_NUMBER}"
            def dockerInfo = artDocker.push "artifactory.legsup.co.uk:8082/${id}:${version}_${BUILD_NUMBER}", 'docker'
            server.publishBuildInfo(dockerInfo)
-           }
+//           }
       }
 
    }
