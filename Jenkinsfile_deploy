@@ -39,8 +39,8 @@ pipeline{
           sh "id=\$(docker run -d  artifactory.legsup.co.uk:8082/web_app:${version})"
 //          def response = httpRequest env.http_server
 //          println("Status: "+response.status)
-          input "Is build is success ?"
-          sh "docker tag {id} artifactory.legsup.co.uk:8082/web_app:ver.${version}_"
+//          input "Is build is success ?"
+          sh "docker tag artifactory.legsup.co.uk:8082/web_app:${version} artifactory.legsup.co.uk:8082/web_app:ver_${version}"
           sh "docker stop --time=1 ${id}"
           sh "docker rm -f ${id}"
 //         }
