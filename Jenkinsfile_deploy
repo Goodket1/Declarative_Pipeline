@@ -14,7 +14,7 @@ pipeline{
       // Servers
       artifactory_server = 'http://10.5.0.12:8081/artifactory/'
       reponame = 'snapshots'
-      http_server = "http://127.0.0.1:8080"
+      http_server = "http://127.0.0.1:8080/project/"
       localrepo = '/root/.m2/repository/'
    }
  stages{
