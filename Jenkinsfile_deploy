@@ -32,13 +32,15 @@ pipeline{
         }
     }
     stage ('Deploy to Server'){
-      agent { docker "artifactory.legsup.co.uk:8082/web_app:${version}" }
+//      agent { docker "artifactory.legsup.co.uk:8082/web_app:${version}" }
       steps{
         script {
+        docker.image("artifactory.legsup.co.uk:8082/web_app:${version}" ).inside {
           def response = httpRequest env.http_server
           println("Status: "+response.status)
          }
       }
     }
-}
+  }
+ }
 }
