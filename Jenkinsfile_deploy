@@ -32,14 +32,18 @@ pipeline{
         }
     }
     stage ('Deploy to Server'){
-//      agent { docker "artifactory.legsup.co.uk:8082/web_app:${version}" }
       steps{
         script {
-        docker.image("artifactory.legsup.co.uk:8082/web_app:${version}" ).inside {
-          sh "/usr/local/tomcat/bin/catalina.sh run"
-          def response = httpRequest env.http_server
-          println("Status: "+response.status)
-         }
+//        docker.image("artifactory.legsup.co.uk:8082/web_app:${version}" ).inside {
+//          sh "/usr/local/tomcat/bin/catalina.sh run &"
+          sh "id=\$(docker run -d -p 8081:8080 artifactory.legsup.co.uk:8082/web_app:${version})"
+//          def response = httpRequest env.http_server
+//          println("Status: "+response.status)
+          input "Is build is success ?"
+          sh "docker tags {id} artifactory.legsup.co.uk:8082/web_app:ver.${version}_"
+          sh "docker stop --time=1 ${id}"
+          sh "docker rm -f ${id}"
+//         }
       }
     }
   }
