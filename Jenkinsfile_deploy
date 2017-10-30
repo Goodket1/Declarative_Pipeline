@@ -13,7 +13,6 @@ pipeline{
       def tomcat_path = '/opt/tomcat/webapps/ROOT/'
 
       // Servers
-      http_server = "http://127.0.0.1:8080"
       localrepo = '/root/.m2/repository/'
       def image = "artifactory.legsup.co.uk:8082/web_app:${version}"
       registry = 'artifactory.legsup.co.uk:8082'
@@ -31,23 +30,24 @@ pipeline{
     stage ('Deploy to Server'){
       steps{
         script {
-          docker.image("$image").inside {
-          sh "catalina.sh run"
-          sh "sleep 90"
-          def response = httpRequest env.http_server
-          println("Status: "+response.status)
-          input "Is build is success ?"
+          img = docker.image("${image}").withRun { c ->
+             echo c.IPAddress
+//            http_server = "http://127.0.0.1:8080"
+//          sh "sleep 90"
+//          def response = httpRequest env.http_server
+//          println("Status: "+response.status)
+//          input "Is build is success ?"
          }
       }
-      }
     }
-    stage ('Set tag version and push to artifactory'){
-      steps{
-        script {
-          def newtag = sh returnStdout: true, script: 'echo "${version%_*}"'
-          sh "/var/jenkins/tag.sh ${version} v${newtag}"
-      }
-   }
-   }
+    }
+//    stage ('Set tag version and push to artifactory'){
+//      steps{
+//        script {
+//          def newtag = sh returnStdout: true, script: 'echo "${version%_*}"'
+//          sh "/var/jenkins/tag.sh ${version} v${newtag}"
+//      }
+//   }
+//   }
  }
 }
