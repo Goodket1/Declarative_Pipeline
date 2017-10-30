@@ -29,7 +29,7 @@ pipeline{
     stage ('Deploy to Server'){
       steps{
         script {
-            img = docker.image("${image}").withRun('-e "/usr/local/tomcat/bin/catalina.sh run" "-p 8080:8080"') {
+            img = docker.image("${image}").withRun('"-p 8080:8080"') {
 
 //          sh "/usr/local/tomcat/bin/catalina.sh run &"
 //          def response = httpRequest env.http_server
