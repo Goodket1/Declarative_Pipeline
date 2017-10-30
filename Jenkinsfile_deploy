@@ -16,6 +16,7 @@ pipeline{
       reponame = 'snapshots'
       http_server = "http://127.0.0.1:8080"
       localrepo = '/root/.m2/repository/'
+      def image = "artifactory.legsup.co.uk:8082/web_app:${version}"
    }
  stages{
     stage('checkout SCM'){
@@ -34,18 +35,23 @@ pipeline{
     stage ('Deploy to Server'){
       steps{
         script {
-//        docker.image("artifactory.legsup.co.uk:8082/web_app:${version}" ).inside {
+            img = docker.image("${image}").withRun('-e "/usr/local/tomcat/bin/catalina.sh run"') {
 //          sh "/usr/local/tomcat/bin/catalina.sh run &"
-          sh "id=\$(docker run -d  artifactory.legsup.co.uk:8082/web_app:${version})"
 //          def response = httpRequest env.http_server
 //          println("Status: "+response.status)
 //          input "Is build is success ?"
-          sh "docker tag artifactory.legsup.co.uk:8082/web_app:${version} artifactory.legsup.co.uk:8082/web_app:ver_${version}"
-          sh "docker stop --time=1 ${id}"
-          sh "docker rm -f ${id}"
-//         }
+            }
+         }
       }
     }
-  }
+    stage ('Set tag version and push to artifactory'){
+      steps{
+        script {
+            img = docker.image("${image}")
+            img.tag('v.1')
+            img.push()
+        }
+      }
+   }
  }
 }

@@ -49,9 +49,9 @@ pipeline{
            id = "web_app"
            version = "0.1.11"
            sh "cp ${localrepo}/com/efsavage/${id}/${version}/${id}-${version}.war ./project.war"
-           newImage = docker.build("artifactory.legsup.co.uk:8082/${id}:${version}_rc.${BUILD_NUMBER}")
+           image = docker.build("artifactory.legsup.co.uk:8082/${id}:${version}_${BUILD_NUMBER}_rc")
            withDockerRegistry([credentialsId: 'artifactory', url: "https://artifactory.legsup.co.uk:8082"]) {
-             newImage.push()
+             image.push()
            }
       }
 
