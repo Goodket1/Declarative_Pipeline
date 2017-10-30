@@ -44,13 +44,9 @@ pipeline{
     }
     stage ('Set tag version and push to artifactory'){
       steps{
-              dir ('/var/jenkins') {
         script {
           def newtag = sh returnStdout: true, script: 'echo "${version%_*}"'
-//          img = docker.image("${image}")
-          sh '"${workspace}/tag.sh ${version} ${newtag}"'
-//          img.push()
-        }
+          sh "/var/jenkins/tag.sh ${version} v${newtag}"
       }
    }
    }
