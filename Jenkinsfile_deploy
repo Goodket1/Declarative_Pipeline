@@ -30,8 +30,8 @@ pipeline{
     }
     stage ('Deploy to Server'){
       steps{
-      docker.image("$image").inside {
         script {
+          docker.image("$image").inside {
           sh "catalina.sh run"
           sh "sleep 90"
           def response = httpRequest env.http_server
