@@ -19,6 +19,8 @@ pipeline{
       registry = 'artifactory.legsup.co.uk:8082'
       pomversion = readMavenPom(file:'app/pom.xml').getVersion()
       pomid = readMavenPom(file:'app/pom.xml').getArtifactId()
+
+
    }
  stages{
     stage('checkout SCM'){
@@ -43,11 +45,10 @@ pipeline{
     stage ('Set tag version and push to artifactory'){
       steps{
         script {
-           sh 'echo "${version%_*}"'
-            img.stop("${image}")
-//            img = docker.image("${image}")
-//            img.tag('v.1')
-//            img.push()
+          def newtag = sh ( script: '"${version%_*}"', returnStatus: true ) == 0
+          img = docker.image("${image}")
+          img.tag('v.newtag')
+          img.push()
         }
       }
    }
