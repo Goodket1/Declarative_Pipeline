@@ -48,8 +48,8 @@ pipeline{
         script {
           def newtag = sh returnStdout: true, script: 'echo "${version%_*}"'
 //          img = docker.image("${image}")
-          sh '"docker tag ${image} ${registry}/web_app:v${version%_*}"'
-//          img.push("v${newtag}")
+          sh '"tag.sh ${version} ${newtag}"'
+//          img.push()
         }
       }
    }
