@@ -12,10 +12,10 @@ pipeline{
    environment {
       def workspace = pwd()
       http_server = "http://${slave}:8080/${env.BUILD_NUMBER}"
-      registry = 'https://artifactory.legsup.co.uk:8082'
+      registry = 'artifactory.legsup.co.uk:8082'
       localrepo = '/root/.m2/repository'
-      def pom = readMavenPom file: 'app/pom.xml'
-
+      version = readMavenPom(file:'app/pom.xml').getVersion()
+      id = readMavenPom(file:'app/pom.xml').getArtifactId()
    }
  stages{
     stage('checkout SCM'){
@@ -50,17 +50,14 @@ pipeline{
 
    stage ('Build Docker image with .war'){
     steps{
-        script{
-           def pom = readMavenPom file: 'app/pom.xml'
-           id = pom.artifactId
-           version = pom.version
-           sh "cp ${localrepo}/com/efsavage/${id}/${version}/${id}-${version}.war ./project.war"
-           image = docker.build("${registry}/${id}:${version}_${BUILD_NUMBER}_rc")
-           withDockerRegistry([credentialsId: 'artifactory', url: "${registry}"]) {
-             image.push()
-           }
+      script{
+         sh "cp ${localrepo}/com/efsavage/${id}/${version}/${id}-${version}.war ./project.war"
+         image = docker.build("${registry}/${id}:${version}_${BUILD_NUMBER}_rc")
+         withDockerRegistry([credentialsId: 'artifactory', url: "${registry}"]) {
+           image.push()
+         }
       }
-   }
+    }
+  }
  }
-}
 }
