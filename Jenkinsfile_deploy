@@ -25,9 +25,8 @@ pipeline{
       steps{
         script {
           img = docker.image("${image}").withRun { c ->
-          def ip = sh "docker inspect -f {{.NetworkSettings.IPAddress}} ${c.id}"
-          http_server = "http://${ip}:8080"
-          sh "sleep 20"
+          def ip = sh returnStdout: true, script: "docker inspect -f {{.NetworkSettings.IPAddress}} ${c.id}"
+          def http_server = "http://172.17.0.2:8080"
           def response = httpRequest http_server
           println("Status: "+response.status)
           input "Is build is success ?"
@@ -35,13 +34,13 @@ pipeline{
         }
       }
     }
-    stage ('Set tag version and push to artifactory'){
-      steps{
-        script {
-          def newtag = sh returnStdout: true, script: 'echo "${version%_*}"'
-          sh "/var/jenkins/tag.sh ${version} v${newtag}"
-        }
-      }
-    }
+//    stage ('Set tag version and push to artifactory'){
+//      steps{
+//        script {
+//          def newtag = sh returnStdout: true, script: 'echo "${version%_*}"'
+//          sh "/var/jenkins/tag.sh ${version} v${newtag}"
+//        }
+//      }
+//    }
  }
 }
