@@ -1,18 +1,21 @@
 pipeline{
-  agent  {
+   agent  {
     node {
      label 'CI_env'
-        customWorkspace '/var/jenkins'
+     customWorkspace '/var/jenkins'
     }
- }
+   }
    tools {
      maven 'm3'
    }
+
    environment {
       def workspace = pwd()
-      def tomcat_path = '/opt/tomcat/webapps/ROOT/'
       http_server = "http://${slave}:8080/${env.BUILD_NUMBER}"
+      registry = 'https://artifactory.legsup.co.uk:8082'
       localrepo = '/root/.m2/repository'
+      def pom = readMavenPom file: 'app/pom.xml'
+
    }
  stages{
     stage('checkout SCM'){
@@ -20,6 +23,7 @@ pipeline{
             checkout scm
         }
     }
+
     stage ("initialize") {
       steps {
         sh '''
@@ -35,6 +39,7 @@ pipeline{
          sh "echo OK"
        }
     }
+
     stage (' Build '){
       steps{
        dir( 'app' ) {
@@ -42,19 +47,19 @@ pipeline{
        }
     }
    }
+
    stage ('Build Docker image with .war'){
     steps{
         script{
            def pom = readMavenPom file: 'app/pom.xml'
-           id = "web_app"
-           version = "0.1.11"
+           id = pom.artifactId
+           version = pom.version
            sh "cp ${localrepo}/com/efsavage/${id}/${version}/${id}-${version}.war ./project.war"
-           image = docker.build("artifactory.legsup.co.uk:8082/${id}:${version}_${BUILD_NUMBER}_rc")
-           withDockerRegistry([credentialsId: 'artifactory', url: "https://artifactory.legsup.co.uk:8082"]) {
+           image = docker.build("${registry}/${id}:${version}_${BUILD_NUMBER}_rc")
+           withDockerRegistry([credentialsId: 'artifactory', url: "${registry}"]) {
              image.push()
            }
       }
-
    }
  }
 }
