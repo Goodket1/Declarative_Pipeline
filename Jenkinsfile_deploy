@@ -11,11 +11,14 @@ pipeline{
    environment {
       def workspace = pwd()
       def tomcat_path = '/opt/tomcat/webapps/ROOT/'
+
       // Servers
-      artifactory_server = 'http://10.5.0.12:8081/artifactory/'
       http_server = "http://127.0.0.1:8080"
       localrepo = '/root/.m2/repository/'
       def image = "artifactory.legsup.co.uk:8082/web_app:${version}"
+      registry = 'artifactory.legsup.co.uk:8082'
+      version = readMavenPom(file:'app/pom.xml').getVersion()
+      id = readMavenPom(file:'app/pom.xml').getArtifactId()
    }
  stages{
     stage('checkout SCM'){
@@ -23,23 +26,15 @@ pipeline{
             checkout scm
         }
     }
-    stage ("initialize") {
-      steps {
-        sh '''
-            echo "PATH = ${PATH}"
-            echo "M2_HOME = ${M2_HOME}"
-            '''
-        }
-    }
     stage ('Deploy to Server'){
       steps{
         script {
-            img = docker.image("${image}").withRun('-e "/usr/local/tomcat/bin/catalina.sh run"') {
+            img = docker.image("${image}").withRun('-e "/usr/local/tomcat/bin/catalina.sh run" -e "-p 8080:8080"') {
 
 //          sh "/usr/local/tomcat/bin/catalina.sh run &"
 //          def response = httpRequest env.http_server
 //          println("Status: "+response.status)
-//          input "Is build is success ?"
+          input "Is build is success ?"
             }
          }
       }
