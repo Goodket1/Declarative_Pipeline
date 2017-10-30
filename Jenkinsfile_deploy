@@ -27,7 +27,7 @@ pipeline{
         script {
           img = docker.image("${image}").withRun { c ->
           def ip = sh returnStdout: true, script: "docker inspect -f {{.NetworkSettings.IPAddress}} ${c.id} | cut -c 1- "
-          def url = sh returnStdout: true, script: "/var/jenkins/ip.sh ${ip}"
+          def url = sh returnStdout: true, script: "echo /var/jenkins/ip.sh ${ip}"
           echo ip
 //          sh "sleep 3"
 //          def response = httpRequest http_server
