@@ -14,8 +14,8 @@ pipeline{
       http_server = "http://${slave}:8080/${env.BUILD_NUMBER}"
       registry = 'artifactory.legsup.co.uk:8082'
       localrepo = '/root/.m2/repository'
-      version = readMavenPom(file:'app/pom.xml').getVersion()
-      id = readMavenPom(file:'app/pom.xml').getArtifactId()
+      pomversion = readMavenPom(file:'app/pom.xml').getVersion()
+      pomid = readMavenPom(file:'app/pom.xml').getArtifactId()
    }
  stages{
     stage('checkout SCM'){
@@ -51,8 +51,8 @@ pipeline{
    stage ('Build Docker image with .war'){
     steps{
       script{
-         sh "cp ${localrepo}/com/efsavage/${id}/${version}/${id}-${version}.war ./project.war"
-         image = docker.build("${registry}/${id}:${version}_${BUILD_NUMBER}_rc")
+         sh "cp ${localrepo}/com/efsavage/${id}/${version}/${pomid}-${pomversion}.war ./project.war"
+         image = docker.build("${registry}/${pomid}:${pomversion}_${BUILD_NUMBER}_rc")
          withDockerRegistry([credentialsId: 'artifactory', url: "https://${registry}"]) {
            image.push()
          }

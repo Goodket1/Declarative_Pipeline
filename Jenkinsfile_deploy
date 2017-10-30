@@ -17,8 +17,8 @@ pipeline{
       localrepo = '/root/.m2/repository/'
       def image = "artifactory.legsup.co.uk:8082/web_app:${version}"
       registry = 'artifactory.legsup.co.uk:8082'
-      version = readMavenPom(file:'app/pom.xml').getVersion()
-      id = readMavenPom(file:'app/pom.xml').getArtifactId()
+      pomversion = readMavenPom(file:'app/pom.xml').getVersion()
+      pomid = readMavenPom(file:'app/pom.xml').getArtifactId()
    }
  stages{
     stage('checkout SCM'){
@@ -29,7 +29,7 @@ pipeline{
     stage ('Deploy to Server'){
       steps{
         script {
-            img = docker.image("${image}").withRun('-e "/usr/local/tomcat/bin/catalina.sh run" -e "-p 8080:8080"') {
+            img = docker.image("${image}").withRun('-e "/usr/local/tomcat/bin/catalina.sh run" "-p 8080:8080"') {
 
 //          sh "/usr/local/tomcat/bin/catalina.sh run &"
 //          def response = httpRequest env.http_server
