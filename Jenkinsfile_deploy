@@ -29,12 +29,13 @@ pipeline{
     stage ('Deploy to Server'){
       steps{
         script {
-            img = docker.image("${image}").run('-p 8080:8080')
+          img = docker.image("${image}").run()
 
-//          sh "/usr/local/tomcat/bin/catalina.sh run &"
-          def response = httpRequest env.http_server
-          println("Status: "+response.status)
-          input "Is build is success ?"
+//          img = docker.image("${image}").run('-p 8080:8080')
+//          sh "sleep 90"
+//          def response = httpRequest env.http_server
+//          println("Status: "+response.status)
+//          input "Is build is success ?"
 
          }
       }
@@ -42,9 +43,11 @@ pipeline{
     stage ('Set tag version and push to artifactory'){
       steps{
         script {
-            img = docker.image("${image}")
-            img.tag('v.1')
-            img.push()
+           sh 'echo "${version%_*}"'
+            img.stop("${image}")
+//            img = docker.image("${image}")
+//            img.tag('v.1')
+//            img.push()
         }
       }
    }
