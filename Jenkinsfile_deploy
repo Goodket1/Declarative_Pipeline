@@ -9,6 +9,7 @@ pipeline{
    def workspace = pwd()
    // Servers
    localrepo = '/root/.m2/repository/'
+//   def http_server = "http://${ip}:8080"
    def image = "artifactory.legsup.co.uk:8082/web_app:${version}"
    registry = 'artifactory.legsup.co.uk:8082'
    pomversion = readMavenPom(file:'app/pom.xml').getVersion()
@@ -25,12 +26,13 @@ pipeline{
       steps{
         script {
           img = docker.image("${image}").withRun { c ->
-          def ip = sh returnStdout: true, script: "docker inspect -f {{.NetworkSettings.IPAddress}} ${c.id}"
-          def http_server = "http://172.17.0.2:8080"
-          sh "sleep 5"
-          def response = httpRequest http_server
-          println("Status: "+response.status)
-          input "Is build is success ?"
+          def ip = sh returnStdout: true, script: "docker inspect -f {{.NetworkSettings.IPAddress}} ${c.id} | cut -c 1- "
+          ip = sh returnStdout: true, script:  'http://'"${ip}"':8080'
+          echo ip
+          sh "sleep 3"
+//          def response = httpRequest http_server
+//          println("Status: "+response.status)
+//          input "Is build is success ?"
           }
         }
       }
