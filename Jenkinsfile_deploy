@@ -30,16 +30,15 @@ pipeline{
     }
     stage ('Deploy to Server'){
       steps{
+      docker.image("$image").inside {
         script {
-          img = docker.image("${image}").run()
-
-//          img = docker.image("${image}").run('-p 8080:8080')
-//          sh "sleep 90"
-//          def response = httpRequest env.http_server
-//          println("Status: "+response.status)
-//          input "Is build is success ?"
-
+          sh "catalina.sh run"
+          sh "sleep 90"
+          def response = httpRequest env.http_server
+          println("Status: "+response.status)
+          input "Is build is success ?"
          }
+      }
       }
     }
     stage ('Set tag version and push to artifactory'){
