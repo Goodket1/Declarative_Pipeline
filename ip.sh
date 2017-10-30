@@ -1,2 +1,2 @@
 #!/bin/bash
-http://$1:8080
+url = http://$1:8080
