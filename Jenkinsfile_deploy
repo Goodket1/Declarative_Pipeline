@@ -32,8 +32,8 @@ pipeline{
             img = docker.image("${image}").run('-p 8080:8080')
 
 //          sh "/usr/local/tomcat/bin/catalina.sh run &"
-//          def response = httpRequest env.http_server
-//          println("Status: "+response.status)
+          def response = httpRequest env.http_server
+          println("Status: "+response.status)
           input "Is build is success ?"
 
          }
