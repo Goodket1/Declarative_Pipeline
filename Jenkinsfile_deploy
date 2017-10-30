@@ -27,8 +27,8 @@ pipeline{
           img = docker.image("${image}").withRun { c ->
           def ip = sh "docker inspect -f {{.NetworkSettings.IPAddress}} ${c.id}"
           http_server = "http://${ip}:8080"
-          sh "sleep 5"
-          def response = httpRequest env.http_server
+          sh "sleep 20"
+          def response = httpRequest http_server
           println("Status: "+response.status)
           input "Is build is success ?"
           }
