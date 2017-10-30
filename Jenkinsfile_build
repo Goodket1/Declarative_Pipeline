@@ -51,7 +51,7 @@ pipeline{
    stage ('Build Docker image with .war'){
     steps{
       script{
-         sh "cp ${localrepo}/com/efsavage/${id}/${version}/${pomid}-${pomversion}.war ./ROOT.war"
+         sh "cp ${localrepo}/com/efsavage/${pomid}/${pomversion}/${pomid}-${pomversion}.war ./ROOT.war"
          image = docker.build("${registry}/${pomid}:${pomversion}_${BUILD_NUMBER}_rc")
          withDockerRegistry([credentialsId: 'artifactory', url: "https://${registry}"]) {
            image.push()
