@@ -13,7 +13,6 @@ pipeline{
       def tomcat_path = '/opt/tomcat/webapps/ROOT/'
       // Servers
       artifactory_server = 'http://10.5.0.12:8081/artifactory/'
-      reponame = 'snapshots'
       http_server = "http://127.0.0.1:8080"
       localrepo = '/root/.m2/repository/'
       def image = "artifactory.legsup.co.uk:8082/web_app:${version}"
@@ -36,6 +35,7 @@ pipeline{
       steps{
         script {
             img = docker.image("${image}").withRun('-e "/usr/local/tomcat/bin/catalina.sh run"') {
+
 //          sh "/usr/local/tomcat/bin/catalina.sh run &"
 //          def response = httpRequest env.http_server
 //          println("Status: "+response.status)
