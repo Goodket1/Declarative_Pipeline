@@ -53,7 +53,7 @@ pipeline{
       script{
          sh "cp ${localrepo}/com/efsavage/${id}/${version}/${id}-${version}.war ./project.war"
          image = docker.build("${registry}/${id}:${version}_${BUILD_NUMBER}_rc")
-         withDockerRegistry([credentialsId: 'artifactory', url: "${registry}"]) {
+         withDockerRegistry([credentialsId: 'artifactory', url: "https://${registry}"]) {
            image.push()
          }
       }
