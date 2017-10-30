@@ -12,7 +12,9 @@ pipeline{
       def workspace = pwd()
       def tomcat_path = '/opt/tomcat/webapps/ROOT/'
 
+
       // Servers
+
       localrepo = '/root/.m2/repository/'
       def image = "artifactory.legsup.co.uk:8082/web_app:${version}"
       registry = 'artifactory.legsup.co.uk:8082'
@@ -31,12 +33,12 @@ pipeline{
       steps{
         script {
           img = docker.image("${image}").withRun { c ->
-             echo c.IPAddress
-//            http_server = "http://127.0.0.1:8080"
-//          sh "sleep 90"
-//          def response = httpRequest env.http_server
-//          println("Status: "+response.status)
-//          input "Is build is success ?"
+          def ip = sh "docker inspect -f {{.NetworkSettings.IPAddress}} ${c.id}"
+          http_server = "http://${ip}8080"
+          sh "sleep 90"
+          def response = httpRequest env.http_server
+          println("Status: "+response.status)
+          input "Is build is success ?"
          }
       }
     }
