@@ -48,7 +48,7 @@ pipeline{
         script {
           def newtag = sh returnStdout: true, script: 'echo "${version%_*}"'
 //          img = docker.image("${image}")
-          sh '"tag.sh ${version} ${newtag}"'
+          sh '"${workspace}/tag.sh ${version} ${newtag}"'
 //          img.push()
         }
       }
