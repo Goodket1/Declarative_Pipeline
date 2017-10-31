@@ -37,7 +37,7 @@ pipeline{
                   env.http_server = "${http_prod_server}"
                   env.sshserver = "${prod_server}"
                   env.reponame = "${masterrepo}"
-              } else if ( env.BRANCH_NAME == 'stage'){
+              } else if ( env.BRANCH_NAME == 'rc'){
                   env.http_server = "${http_stage_server}${env.BUILD_NUMBER}"
                   env.sshserver = "${stage_server}"
                   env.reponame = "${stagerepo}"
@@ -74,7 +74,7 @@ pipeline{
            if (env.BRANCH_NAME == 'master' ){
                 input 'Do you approve  publish to PROD?'
            }
-           else if (env.BRANCH_NAME == 'stage' ){
+           else if (env.BRANCH_NAME == 'rc' ){
                 def server = Artifactory.server 'artifactory'
                 def rtMaven = Artifactory.newMavenBuild()
                 rtMaven.resolver server: server, releaseRepo: reponame, snapshotRepo: reponame
@@ -103,7 +103,7 @@ pipeline{
               if (env.BRANCH_NAME == 'master' ){
                 sh "curl -o /var/version/web_app.war ${artifactory}/${reponame}/${ id }/${ version }/${ webapp_build }.war"
               }
-              else if (env.BRANCH_NAME == 'stage' ){
+              else if (env.BRANCH_NAME == 'rc' ){
                 sh "curl -o /var/rc/web_app.war ${artifactory}/${reponame}/${ id }/${ version }/${ webapp_build }.war"
               }
               else {
@@ -123,7 +123,7 @@ pipeline{
                  def response = httpRequest env.http_server
                  println("Status: "+response.status)
               }
-              else if (env.BRANCH_NAME == 'stage' ){
+              else if (env.BRANCH_NAME == 'rc' ){
                  def response = httpRequest env.http_server
                  println("Status: "+response.status)
                  input 'Is build succeed?'
