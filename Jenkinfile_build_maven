@@ -17,6 +17,7 @@ pipeline{
       // Repository on Artifactory
       masterrepo ='version'
       stagerepo ='rc'
+      devrepo = 'dev'
 
       // Servers
       dev_server = '/var/else/'
@@ -37,12 +38,12 @@ pipeline{
                   env.sshserver = "${prod_server}"
                   env.reponame = "${masterrepo}"
               } else if ( env.BRANCH_NAME == 'stage'){
-                  env.http_server = "${http_stage_server}${BRANCH_NAME}${env.BUILD_NUMBER}"
+                  env.http_server = "${http_stage_server}${env.BUILD_NUMBER}"
                   env.sshserver = "${stage_server}"
                   env.reponame = "${stagerepo}"
                   tomcat_path = "${tomcat_path}/${BRANCH_NAME}${env.BUILD_NUMBER}"
               }else {
-                  env.http_server = "${http_dev_server}${BRANCH_NAME}${env.BUILD_NUMBER}"
+                  env.http_server = "${http_dev_server}${env.BUILD_NUMBER}"
                   env.sshserver = "${dev_server}"
                   env.reponame = "${devrepo}"
                   tomcat_path = "${tomcat_path}${BRANCH_NAME}${env.BUILD_NUMBER}"
@@ -106,7 +107,10 @@ pipeline{
                 sh "curl -o /var/rc/web_app.war ${artifactory}/${reponame}/${ id }/${ version }/${ webapp_build }.war"
               }
               else {
-                sh " cp ${env.workspace}/app/target/${id}-${version}.war /var/else/${env.BUILD_NUMBER}/"
+                sh """
+                mkdir ${dev_server}/${env.BUILD_NUMBER}
+                unzip ${env.workspace}/app/target/${id}-${version}.war -d ${dev_server}${env.BUILD_NUMBER}/
+              """
               }
 
          }
