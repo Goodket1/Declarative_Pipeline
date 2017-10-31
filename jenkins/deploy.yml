@@ -1,7 +1,0 @@
-- name: deploy
-  any_errors_fatal: true
-  hosts: '{{ host }}'
-  gather_facts: true
-  become: true
-  roles:
-    - deploy

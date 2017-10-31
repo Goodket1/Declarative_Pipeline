@@ -5,8 +5,14 @@ pipeline{
      customWorkspace '/var/jenkins'
     }
    }
+
    tools {
      maven 'm3'
+   }
+
+   options {
+        buildDiscarder(logRotator(numToKeepStr: '30'))
+        timeout(time: 1, unit: 'HOURS')
    }
 
    environment {
@@ -29,14 +35,13 @@ pipeline{
         sh '''
             echo "PATH = ${PATH}"
             echo "M2_HOME = ${M2_HOME}"
-            '''
+           '''
         }
     }
 
     stage('SonarQube analysis') {
-       when { not { branch 'master'}}
        steps {
-         sh "echo OK"
+         sh "echo SonarQube analysis OK"
        }
     }
 
@@ -58,6 +63,6 @@ pipeline{
          }
       }
     }
-  }
+ }
  }
 }

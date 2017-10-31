@@ -1,9 +1,27 @@
-def URL = 'https://artifactory.legsup.co.uk/artifactory/api/docker/docker/v2/web_app/tags/list'
+@Grab(group='org.codehaus.groovy.modules.http-builder', module='http-builder', version='0.5.0-RC2' )
+import groovyx.net.http.*
+import static groovyx.net.http.ContentType.*
+import static groovyx.net.http.Method.*
+import groovyx.net.http.HTTPBuilder;
+import groovy.json.JsonSlurper
 
-def metadata = new XmlSlurper().parse(URL)
+
+def baseUrl = new URL('https://artifactory.legsup.co.uk/artifactory/api/docker/docker/v2/web_app/tags/list')
+
+HttpURLConnection connection = (HttpURLConnection) baseUrl.openConnection();
+connection.addRequestProperty("Accept", "application/json")
+def basicAuth = "${username}:${password}".getBytes().encodeBase64().toString()
+connection.addRequestProperty("Authorization", "Basic ${basicAuth}")
+connection.with {
+doOutput = true
+requestMethod = 'GET'
+def meta = content.text
+def restResponse = meta
+def list1 = new JsonSlurper().parseText( restResponse )
+def names = list1.tags
 def list = []
-metadata.tags.each{
-  list.add(it)
-}
+  names.each {
+    list.add(it)
+  }
 return list.reverse(true)
-
+}

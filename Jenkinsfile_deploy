@@ -5,11 +5,16 @@ pipeline{
         customWorkspace '/var/jenkins'
     }
  }
+ options {
+        buildDiscarder(logRotator(numToKeepStr: '30'))
+        timeout(time: 1, unit: 'HOURS')
+    }
+
  environment {
    def workspace = pwd()
    // Servers
    localrepo = '/root/.m2/repository/'
-//   def http_server = "http://${ip}:8080"
+   def http_server = "http://${ip}:8080"
    def image = "artifactory.legsup.co.uk:8082/web_app:${version}"
    registry = 'artifactory.legsup.co.uk:8082'
    pomversion = readMavenPom(file:'app/pom.xml').getVersion()
@@ -26,24 +31,26 @@ pipeline{
       steps{
         script {
           img = docker.image("${image}").withRun { c ->
-          def ip = sh returnStdout: true, script: "docker inspect -f {{.NetworkSettings.IPAddress}} ${c.id} | cut -c 1- "
-          def url = sh returnStdout: true, script: "/var/jenkins/ip.sh ${ip}"
-          echo ip
-//          sh "sleep 3"
-//          def response = httpRequest http_server
-//          println("Status: "+response.status)
-//          input "Is build is success ?"
+          def ip = sh returnStdout: true, script: "docker inspect -f {{.NetworkSettings.IPAddress}} ${c.id}"
+          def http_server = "http://${ip}".trim()+":8080"
+          sh "sleep 3"
+          def response = httpRequest http_server
+          println("Status: "+response.status)
+          input "Is build is success ?"
           }
         }
       }
     }
-//    stage ('Set tag version and push to artifactory'){
-//      steps{
-//        script {
-//          def newtag = sh returnStdout: true, script: 'echo "${version%_*}"'
-//          sh "/var/jenkins/tag.sh ${version} v${newtag}"
-//        }
-//      }
-//    }
+    stage ('Set tag version and push to artifactory'){
+      steps{
+        script {
+          def newtag = sh returnStdout: true, script: 'echo "${version%_*}"'
+          sh """
+            docker tag artifactory.legsup.co.uk:8082/web_app:${version} artifactory.legsup.co.uk:8082/web_app:v${newtag}
+            docker push artifactory.legsup.co.uk:8082/web_app:v${newtag}
+            """
+          }
+        }
+      }
+    }
  }
-}
