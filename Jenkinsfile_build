@@ -53,7 +53,7 @@ pipeline{
     }
    }
 
-   stage ('Build Docker image with .war'){
+   stage ('Build Docker image and do smoke test'){
     steps{
       script{
          sh "cp ${localrepo}/com/efsavage/${pomid}/${pomversion}/${pomid}-${pomversion}.war ./ROOT.war"
@@ -70,8 +70,13 @@ pipeline{
           def response = httpRequest http_server
           println("Status: "+response.status)
           }
+      }
+    }
+  }
 
-
+   stage ('Push to registry'){
+    steps{
+      script{
          withDockerRegistry([credentialsId: 'artifactory', url: "https://${registry}"]) {
          image.push()
          }
