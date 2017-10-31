@@ -122,7 +122,7 @@ pipeline{
               }
               else {
                 sh """
-                mkdir ${dev_server}/${env.BUILD_NUMBER}
+                mkdir ${dev_server}${env.BUILD_NUMBER}
                 unzip "${env.workspace}/app/target/${id}-${version}.war -d ${dev_server}${env.BUILD_NUMBER}/"
               """
               }
