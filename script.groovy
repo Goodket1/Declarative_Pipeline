@@ -13,17 +13,15 @@ def basicAuth = "admin:password".getBytes().encodeBase64().toString()
 connection.addRequestProperty("Authorization", "Basic ${basicAuth}")
 connection.with {
     doOutput = true
-    requestMethod = 'GET'
-    def meta = content.text
-    def restResponse = meta
-    def list1 = new JsonSlurper().parseText( restResponse )
-    def names = list1.tags
-    def list = []
-    names.each {
-      if(it.startsWith('v')) {
-          }else{
+           requestMethod = 'GET'
+           def meta = content.text
+           def restResponse = meta
+           def list1 = new JsonSlurper().parseText( restResponse )
+           def names = list1.tags
+           def list = []
+
+           names.each {
              list.add(it)
-          }
-      }
-    println list.reverse(true)
-    }
+              }
+           return list.reverse(true)
+         }
