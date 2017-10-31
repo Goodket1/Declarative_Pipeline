@@ -58,8 +58,22 @@ pipeline{
       script{
          sh "cp ${localrepo}/com/efsavage/${pomid}/${pomversion}/${pomid}-${pomversion}.war ./ROOT.war"
          image = docker.build("${registry}/${pomid}:${pomversion}_rc")
+         port = sh (
+               script: 'awk -v min=8082 -v max=8099 \'BEGIN{srand(); print int(min+rand()*(max-min+1))}\'',
+             returnStdout: true
+          ).trim()
+         echo port
+
+          img = docker.image("${registry}/${pomid}:${pomversion}_rc").withRun("-p ${port}:8080") { c ->
+          def http_server = "http://127.0.0.1:${port}"
+          sh "sleep 8"
+          def response = httpRequest http_server
+          println("Status: "+response.status)
+          }
+
+
          withDockerRegistry([credentialsId: 'artifactory', url: "https://${registry}"]) {
-           image.push()
+         image.push()
          }
       }
     }
