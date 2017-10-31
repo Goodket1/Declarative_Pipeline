@@ -30,7 +30,7 @@ pipeline{
     stage ('Deploy to Server'){
       steps{
         script {
-          img = docker.image("${image}").withRun { '-p 8080:8080' ,c ->
+          img = docker.image("${image}").withRun { c ->
           def ip = sh returnStdout: true, script: "docker inspect -f {{.NetworkSettings.IPAddress}} ${c.id}"
           def http_server = "http://${ip}".trim()+":8080"
           sh "sleep 3"
