@@ -1,8 +1,7 @@
 pipeline{
  agent {
     node {
-        label 'CI_env'
-        customWorkspace '/var/jenkins'
+        label 'master'
     }
  }
  options {
@@ -22,11 +21,6 @@ pipeline{
  }
 
  stages{
-    stage('checkout SCM'){
-        steps {
-            checkout scm
-        }
-    }
     stage ('Deploy to Server'){
       steps{
         script {
@@ -36,21 +30,9 @@ pipeline{
           sh "sleep 3"
           def response = httpRequest http_server
           println("Status: "+response.status)
-          input "Is build is success ?"
           }
         }
       }
     }
-    stage ('Set tag version and push to artifactory'){
-      steps{
-        script {
-          def newtag = sh returnStdout: true, script: 'echo "${version%_*}"'
-          sh """
-            docker tag artifactory.legsup.co.uk:8082/web_app:${version} artifactory.legsup.co.uk:8082/web_app:v${newtag}
-            docker push artifactory.legsup.co.uk:8082/web_app:v${newtag}
-            """
-          }
-        }
-      }
     }
  }

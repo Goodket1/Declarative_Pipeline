@@ -6,25 +6,24 @@ import static groovyx.net.http.Method.*
 import groovyx.net.http.HTTPBuilder;
 import groovy.json.JsonSlurper
 
-
-
-         def baseUrl = new URL('https://artifactory.legsup.co.uk/artifactory/api/docker/docker/v2/web_app/tags/list')
-
-         HttpURLConnection connection = (HttpURLConnection) baseUrl.openConnection();
-         connection.addRequestProperty("Accept", "application/json")
-         def basicAuth = "admin:password".getBytes().encodeBase64().toString()
-         connection.addRequestProperty("Authorization", "Basic ${basicAuth}")
-         connection.with {
-           doOutput = true
-           requestMethod = 'GET'
-           def meta = content.text
-           def restResponse = meta
-           def list1 = new JsonSlurper().parseText( restResponse )
-           def names = list1.tags
-           def list = []
-
-           names.each {
+def baseUrl = new URL('https://artifactory.legsup.co.uk/artifactory/api/docker/docker/v2/web_app/tags/list')
+HttpURLConnection connection = (HttpURLConnection) baseUrl.openConnection();
+connection.addRequestProperty("Accept", "application/json")
+def basicAuth = "admin:password".getBytes().encodeBase64().toString()
+connection.addRequestProperty("Authorization", "Basic ${basicAuth}")
+connection.with {
+    doOutput = true
+    requestMethod = 'GET'
+    def meta = content.text
+    def restResponse = meta
+    def list1 = new JsonSlurper().parseText( restResponse )
+    def names = list1.tags
+    def list = []
+    names.each {
+      if(it.startsWith('v')) {
+          }else{
              list.add(it)
-              }
-           return list.reverse(true)
-         }
+          }
+      }
+    println list.reverse(true)
+    }
