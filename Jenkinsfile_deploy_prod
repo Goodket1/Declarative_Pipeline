@@ -1,7 +1,7 @@
 pipeline{
- agent {
+ agent  {
     node {
-        label 'master'
+      label 'master'
     }
  }
  options {
@@ -24,15 +24,20 @@ pipeline{
     stage ('Deploy to Server'){
       steps{
         script {
-          img = docker.image("${image}").withRun { c ->
-          def ip = sh returnStdout: true, script: "docker inspect -f {{.NetworkSettings.IPAddress}} ${c.id}"
-          def http_server = "http://${ip}".trim()+":8080"
+          img = docker.image("${image}").Run ('-p 8081:8080')
+          def http_server = "http://127.0.0.1:8080"
           sh "sleep 3"
           def response = httpRequest http_server
           println("Status: "+response.status)
-          }
         }
       }
     }
+ }
+ post {
+        failure {
+            sh """
+              docker stop $(docker ps)
+              """
+        }
     }
  }
