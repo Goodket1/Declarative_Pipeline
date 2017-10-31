@@ -21,7 +21,7 @@ pipeline{
 
       // Servers
       dev_server = '/var/else/'
-      stage_server = '/var/rc/'
+      rc_server = '/var/rc/'
       prod_server = '/var/version/'
       http_dev_server = "http://35.194.45.43:8092/"
       http_stage_server = 'http://35.194.45.43:8090/'
@@ -39,7 +39,7 @@ pipeline{
                   env.reponame = "${masterrepo}"
               } else if ( env.BRANCH_NAME == 'rc'){
                   env.http_server = "${http_stage_server}${env.BUILD_NUMBER}"
-                  env.sshserver = "${stage_server}"
+                  env.sshserver = "${rc_server}"
                   env.reponame = "${stagerepo}"
                   tomcat_path = "${tomcat_path}/${BRANCH_NAME}${env.BUILD_NUMBER}"
               }else {
@@ -77,7 +77,6 @@ pipeline{
            else if (env.BRANCH_NAME == 'rc' ){
                 def server = Artifactory.server 'artifactory'
                 def rtMaven = Artifactory.newMavenBuild()
-                rtMaven.resolver server: server, releaseRepo: reponame, snapshotRepo: reponame
                 rtMaven.deployer server: server, releaseRepo: reponame, snapshotRepo: reponame
                 rtMaven.tool = 'm3'
                 def buildInfo = rtMaven.run pom: 'pom.xml', goals: 'install'
@@ -99,20 +98,27 @@ pipeline{
     }
     stage ('Deploy to Server'){
       steps{
+       dir( '/var/' ) {
          script {
               if (env.BRANCH_NAME == 'master' ){
                 sh "curl -o /var/version/web_app.war ${artifactory}/${reponame}/${ id }/${ version }/${ webapp_build }.war"
               }
               else if (env.BRANCH_NAME == 'rc' ){
-                sh "curl -o /var/rc/web_app.war ${artifactory}/${reponame}/${ id }/${ version }/${ webapp_build }.war"
+              withCredentials([string(credentialsId: 'my-pass', variable: 'password')]) {
+                sh """
+                  mkdir ${rc_server}${env.BUILD_NUMBER} && \
+                  curl -u admin:${password} -O ${artifactory_server}${reponame}/com/efsavage/${id}/${version}/${id}-${version}.war && \
+                  unzip ${id}-${version}.war -d ${rc_server}${env.BUILD_NUMBER}
+              """
+               }
               }
               else {
                 sh """
                 mkdir ${dev_server}/${env.BUILD_NUMBER}
-                unzip ${env.workspace}/app/target/${id}-${version}.war -d ${dev_server}${env.BUILD_NUMBER}/
+                unzip "${env.workspace}/app/target/${id}-${version}.war -d ${dev_server}${env.BUILD_NUMBER}/"
               """
               }
-
+            }
          }
       }
     }
@@ -127,9 +133,8 @@ pipeline{
                  def response = httpRequest env.http_server
                  println("Status: "+response.status)
                  input 'Is build succeed?'
-                 def server = Artifactory.newServer url: 'http://10.5.0.12:8081/artifactory/', username: 'admin', password: 'password'
+                 def server = Artifactory.server 'artifactory'
                  def rtMaven = Artifactory.newMavenBuild()
-                 rtMaven.resolver server: server, releaseRepo: reponame, snapshotRepo: reponame
                  rtMaven.deployer server: server, releaseRepo: reponame, snapshotRepo: reponame
                  rtMaven.tool = 'm3'
                  def buildInfo = rtMaven.run pom: 'app/pom.xml', goals: 'clean'
