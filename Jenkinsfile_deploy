@@ -27,7 +27,7 @@ pipeline{
             checkout scm
         }
     }
-    stage ('Deploy to Server'){
+    stage ('Deploy to QA Server'){
       steps{
         script {
           img = docker.image("${image}").withRun('-p 8081:8080') { c ->
