@@ -1,11 +1,12 @@
 pipeline{
-  agent  {
+   agent  {
     node {
      label 'CI_env'
      customWorkspace '/var/jenkins'
     }
    }
-  tools {
+
+ tools {
    maven 'm3'
     }
     environment {
@@ -13,11 +14,8 @@ pipeline{
       buildInfo = Artifactory.newBuildInfo()
       def workspace = pwd()
       def tomcat_path = '/opt/tomcat/webapps/ROOT/'
-      id = 'web_app'
 
       // Repository on Artifactory
-      if
-      masterrepo ='version'
       stagerepo ='rc'
       devrepo = 'dev'
 
@@ -30,59 +28,104 @@ pipeline{
       http_prod_server = 'http://35.194.45.43:8091'
       artifactory_server = 'https://artifactory.legsup.co.uk/artifactory/'
     }
-
  stages{
     stage('checkout SCM'){
         steps {
             checkout scm
             script {
-              env.http_server = "${http_prod_server}"
-              env.sshserver = "${prod_server}"
-              env.reponame = "${masterrepo}"
+              if ( env.BRANCH_NAME == 'rc'){
+                  env.http_server = "${http_stage_server}${env.BUILD_NUMBER}"
+                  env.sshserver = "${rc_server}"
+                  env.reponame = "${stagerepo}"
+                  tomcat_path = "${tomcat_path}/${BRANCH_NAME}${env.BUILD_NUMBER}"
+              }else {
+                  env.http_server = "${http_dev_server}${env.BUILD_NUMBER}"
+                  env.sshserver = "${dev_server}"
+                  env.reponame = "${devrepo}"
+                  tomcat_path = "${tomcat_path}${BRANCH_NAME}${env.BUILD_NUMBER}"
+                  }
             }
         }
     }
-    stage ('Gradle config') {
+   stage ("initialize") {
+      steps {
+        sh '''
+            echo "PATH = ${PATH}"
+            echo "M2_HOME = ${M2_HOME}"
+            '''
+        }
+    }
+
+    stage('SonarQube analysis') {
+       when { not { branch 'master'}}
        steps {
-         script {
-          server = Artifactory.server 'artifactory'
-          rtGradle = Artifactory.newGradleBuild()
-          rtGradle.tool = GRADLE_TOOL // Tool name from Jenkins configuration
-          rtGradle.deployer repo: 'reponame', server: server
-          rtGradle.deployer.deployArtifacts = false // Disable artifacts deployment during Gradle run
-          buildInfo = Artifactory.newBuildInfo()
-         }
-
-
+         sh "echo OK"
        }
     }
 
+    stage (' Build '){
+      steps{
+       dir( 'app' ) {
+        script {
+           if (env.BRANCH_NAME == 'rc' ){
+                def server = Artifactory.server 'artifactory'
+                def rtGradle = Artifactory.newMavenBuild()
+                rtGradle.tool = 'gradle'
+                rtGradle.deployer server: server, releaseRepo: reponame, snapshotRepo: reponame
+                rtGradle.deployer.deployArtifacts = false
+                buildInfo  = Artifactory.newBuildInfo()
+                def pom = readMavenPom file: 'pom.xml'
+                id = pom.artifactId
+                version = pom.version
+           }
+           else {
+                def server = Artifactory.server 'artifactory'
+                def rtGradle = Artifactory.newMavenBuild()
+                rtGradle.tool = 'gradle'
+                rtGradle.deployer server: server, releaseRepo: reponame, snapshotRepo: reponame
+                rtGradle.deployer.deployArtifacts = false
+                buildInfo  = Artifactory.newBuildInfo()
+                def pom = readMavenPom file: 'pom.xml'
+                id = pom.artifactId
+                version = pom.version
+                rtGradle.run rootDir: 'gradle-examples/4/gradle-example-ci-server/', buildFile: 'build.gradle', tasks: 'clean test'
 
+          }
+          }
+        }
+      }
+    }
+    stage ('Deploy to Server'){
+      steps{
+       dir( '/var/' ) {
+         script {
+            if (env.BRANCH_NAME == 'rc' ){
+              withCredentials([string(credentialsId: 'my-pass', variable: 'password')]) {
+                sh """
+                  mkdir ${rc_server}${env.BUILD_NUMBER} && \
+                  curl -u admin:${password} -O ${artifactory_server}${reponame}/com/efsavage/${id}/${version}/${id}-${version}.war && \
+                  unzip ${id}-${version}.war -d ${rc_server}${env.BUILD_NUMBER}
+                """
+               }
+              }
+              else {
+                def server = Artifactory.server 'artifactory'
+                def rtGradle = Artifactory.newMavenBuild()
+                rtGradle.tool = 'gradle'
+                rtGradle.deployer server: server, releaseRepo: reponame, snapshotRepo: reponame
+                rtGradle.deployer.deployArtifacts = false
+                buildInfo  = Artifactory.newBuildInfo()
+                def pom = readMavenPom file: 'pom.xml'
+                id = pom.artifactId
+                version = pom.version
+                rtGradle.run rootDir: 'gradle-examples/4/gradle-example-ci-server/', buildFile: 'build.gradle', tasks: 'artifactoryPublish', buildInfo: buildInfo
+                rtGradle.deployer.deployArtifacts buildInfo
+                server.publishBuildInfo buildInfo
+              }
+            }
+         }
+      }
+    }
+ }
 }
 
-     stage ('Artifactory configuration') {
-        // Obtain an Artifactory server instance, defined in Jenkins --> Manage:
-        server = Artifactory.server SERVER_ID
-
-        rtGradle = Artifactory.newGradleBuild()
-        rtGradle.tool = GRADLE_TOOL // Tool name from Jenkins configuration
-        rtGradle.deployer repo: 'libs-release-local', server: server
-        rtGradle.resolver repo: 'libs-release', server: server
-        rtGradle.deployer.deployArtifacts = false // Disable artifacts deployment during Gradle run
-
-        buildInfo = Artifactory.newBuildInfo()
-    }
-
-    stage ('Test') {
-        rtGradle.run rootDir: 'gradle-examples/4/gradle-example-ci-server/', buildFile: 'build.gradle', tasks: 'clean test'
-    }
-
-    stage ('Deploy') {
-        rtGradle.run rootDir: 'gradle-examples/4/gradle-example-ci-server/', buildFile: 'build.gradle', tasks: 'artifactoryPublish', buildInfo: buildInfo
-        rtGradle.deployer.deployArtifacts buildInfo
-    }
-
-    stage ('Publish build info') {
-        server.publishBuildInfo buildInfo
-    }
-}

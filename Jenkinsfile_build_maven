@@ -16,7 +16,6 @@ pipeline{
       def tomcat_path = '/opt/tomcat/webapps/ROOT/'
 
       // Repository on Artifactory
-      masterrepo ='version'
       stagerepo ='rc'
       devrepo = 'dev'
 
