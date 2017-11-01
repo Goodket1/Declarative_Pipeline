@@ -5,7 +5,6 @@ pipeline{
      customWorkspace '/var/jenkins'
     }
    }
-
  tools {
    gradle 'g4'
     }
