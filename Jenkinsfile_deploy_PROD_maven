@@ -55,7 +55,6 @@ pipeline{
          sh "echo OK"
        }
     }
-
     stage (' approve  publish to PROD? '){
       steps{
        dir( 'app' ) {
@@ -81,8 +80,8 @@ pipeline{
     stage ('Test URL '){
       steps{
          script {
-           def response = httpRequest env.http_server
-           println("Status: "+response.status)
+//          def response = httpRequest env.http_server
+//           println("Status: "+response.status)
            }
          }
       }
