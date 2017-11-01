@@ -71,10 +71,10 @@ pipeline{
                 def server = Artifactory.server 'artifactory'
                 def rtGradle = Artifactory.newGradleBuild()
                 rtGradle.tool = 'g4'
-                rtGradle.deployer server: server, releaseRepo: reponame, snapshotRepo: reponame
+                rtGradle.deployer server: server, releaseRepo: ${reponame}, snapshotRepo: ${reponame}
                 rtGradle.deployer.deployArtifacts = false
                 buildInfo  = Artifactory.newBuildInfo()
-                rtGradle.run rootDir: "/var/jenkins/gradle_app", buildFile: 'build.gradle', tasks: 'clean'
+                rtGradle.run rootDir: "/var/jenkins/gradle_app", buildFile: 'build.gradle', tasks: 'clean test'
 
           }
           }
