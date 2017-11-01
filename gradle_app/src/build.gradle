@@ -1,3 +1,6 @@
+gretty {
+    integrationTestTask = 'test'
+}
 
 plugins {
     id 'java'
@@ -6,9 +9,7 @@ plugins {
 
 }
 
-gretty {
-    integrationTestTask = 'test'
-}
+
 repositories {
     jcenter()
 }

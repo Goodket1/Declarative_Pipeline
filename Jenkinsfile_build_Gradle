@@ -94,16 +94,17 @@ pipeline{
                }
               }
               else {
+                def rtGradle = Artifactory.newGradleBuild()
                 rtGradle.tool = 'g4'
                 rtGradle.run rootDir: "/var/jenkins/gradle_app", buildFile: 'build.gradle', tasks: 'test'
               }
             }
          }
       }
-    stage ('Deploy to Version'){
-      steps{
-         when { branch 'rc' }
-         script {
+    stage ('Deploy to Version (only rc)'){
+      when { branch 'rc' }
+        steps{
+           script {
                  def server = Artifactory.server 'artifactory'
                  def rtGradle = Artifactory.newGradleBuild()
                  rtGradle.deployer repo: reponame, server: server
@@ -124,6 +125,5 @@ pipeline{
       }
     }
     }
- }
 
 
