@@ -69,7 +69,7 @@ pipeline{
            }
            else {
                 def server = Artifactory.server 'artifactory'
-                def rtGradle = Artifactory.newMavenBuild()
+                def rtGradle = Artifactory.newGradleBuild()
                 rtGradle.tool = 'g4'
                 rtGradle.deployer server: server, releaseRepo: reponame, snapshotRepo: reponame
                 rtGradle.deployer.deployArtifacts = false
