@@ -68,7 +68,7 @@ pipeline{
          script {
            withCredentials([string(credentialsId: 'my-pass', variable: 'password')]) {
             sh """
-              rm -r ${prod_server}*&& \
+              rm -r ${prod_server}* && \
               curl -u admin:${password} -O ${artifactory_server}${reponame}/com/efsavage/${id}/${version}/${id}-${version}.war && \
               unzip ${id}-${version}.war -d ${prod_server}
               """
