@@ -10,8 +10,6 @@ pipeline{
    gradle 'g4'
     }
     environment {
-      def server = Artifactory.server 'artifactory'
-      buildInfo = Artifactory.newBuildInfo()
       def workspace = pwd()
       def tomcat_path = '/opt/tomcat/webapps/ROOT/'
 
@@ -68,6 +66,7 @@ pipeline{
 //                def pom = readMavenPom file: 'pom.xml'
 //                id = pom.artifactId
 //                version = pom.version
+                rtGradle.run rootDir: "/var/jenkins/gradle_app", buildFile: 'build.gradle', tasks: 'clean test'
            }
            else {
                 def server = Artifactory.server 'artifactory'
@@ -76,47 +75,14 @@ pipeline{
                 rtGradle.deployer server: server, releaseRepo: reponame, snapshotRepo: reponame
                 rtGradle.deployer.deployArtifacts = false
                 buildInfo  = Artifactory.newBuildInfo()
-//                def pom = readMavenPom file: 'pom.xml'
-//                id = pom.artifactId
-//                version = pom.version
-                rtGradle.run rootDir: "${workspace}gradle_app/", buildFile: 'build.gradle', tasks: 'clean test'
+                rtGradle.run rootDir: "/var/jenkins/gradle_app", buildFile: 'build.gradle', tasks: 'clean'
 
           }
           }
         }
       }
     }
-    stage ('Deploy to Server'){
-      steps{
-       dir( '/var/' ) {
-         script {
-            if (env.BRANCH_NAME == 'rc' ){
-              withCredentials([string(credentialsId: 'my-pass', variable: 'password')]) {
-                sh """
-                  mkdir ${rc_server}${env.BUILD_NUMBER} && \
-                  curl -u admin:${password} -O ${artifactory_server}${reponame}/com/efsavage/${id}/${version}/${id}-${version}.war && \
-                  unzip ${id}-${version}.war -d ${rc_server}${env.BUILD_NUMBER}
-                """
-               }
-              }
-              else {
-                def server = Artifactory.server 'artifactory'
-                def rtGradle = Artifactory.newMavenBuild()
-                rtGradle.tool = 'gradle'
-                rtGradle.deployer server: server, releaseRepo: reponame, snapshotRepo: reponame
-                rtGradle.deployer.deployArtifacts = false
-                buildInfo  = Artifactory.newBuildInfo()
-                def pom = readMavenPom file: 'pom.xml'
-                id = pom.artifactId
-                version = pom.version
-                rtGradle.run rootDir: 'gradle-examples/4/gradle-example-ci-server/', buildFile: 'build.gradle', tasks: 'artifactoryPublish', buildInfo: buildInfo
-                rtGradle.deployer.deployArtifacts buildInfo
-                server.publishBuildInfo buildInfo
-              }
-            }
-         }
-      }
-    }
+
  }
 }
 
