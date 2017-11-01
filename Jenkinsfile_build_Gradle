@@ -7,7 +7,7 @@ pipeline{
    }
 
  tools {
-   maven 'm3'
+   gradle 'g4'
     }
     environment {
       def server = Artifactory.server 'artifactory'
@@ -47,15 +47,6 @@ pipeline{
             }
         }
     }
-   stage ("initialize") {
-      steps {
-        sh '''
-            echo "PATH = ${PATH}"
-            echo "M2_HOME = ${M2_HOME}"
-            '''
-        }
-    }
-
     stage('SonarQube analysis') {
        when { not { branch 'master'}}
        steps {
@@ -70,7 +61,7 @@ pipeline{
            if (env.BRANCH_NAME == 'rc' ){
                 def server = Artifactory.server 'artifactory'
                 def rtGradle = Artifactory.newMavenBuild()
-                rtGradle.tool = 'gradle'
+                rtGradle.tool = 'g4'
                 rtGradle.deployer server: server, releaseRepo: reponame, snapshotRepo: reponame
                 rtGradle.deployer.deployArtifacts = false
                 buildInfo  = Artifactory.newBuildInfo()
@@ -81,7 +72,7 @@ pipeline{
            else {
                 def server = Artifactory.server 'artifactory'
                 def rtGradle = Artifactory.newMavenBuild()
-                rtGradle.tool = 'gradle'
+                rtGradle.tool = 'g4'
                 rtGradle.deployer server: server, releaseRepo: reponame, snapshotRepo: reponame
                 rtGradle.deployer.deployArtifacts = false
                 buildInfo  = Artifactory.newBuildInfo()
