@@ -16,7 +16,7 @@ pipeline{
       def tomcat_path = '/opt/tomcat/webapps/ROOT/'
 
       // Repository on Artifactory
-      stagerepo ='rc'
+      stagerepo ='rc_gradle'
       devrepo = 'dev'
 
       // Servers
@@ -65,9 +65,9 @@ pipeline{
                 rtGradle.deployer server: server, releaseRepo: reponame, snapshotRepo: reponame
                 rtGradle.deployer.deployArtifacts = false
                 buildInfo  = Artifactory.newBuildInfo()
-                def pom = readMavenPom file: 'pom.xml'
-                id = pom.artifactId
-                version = pom.version
+//                def pom = readMavenPom file: 'pom.xml'
+//                id = pom.artifactId
+//                version = pom.version
            }
            else {
                 def server = Artifactory.server 'artifactory'
