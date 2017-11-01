@@ -1,38 +1,13 @@
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'org.akhikhl.gretty:gretty:+'
-    }
-}
-
+apply plugin: 'maven'
 apply plugin: 'java'
-apply plugin: 'war'
-
-
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+apply plugin: 'application'
 
 repositories {
-    mavenCentral()
+  mavenCentral();
 }
 
 dependencies {
-    compile (
-            'org.springframework:spring-webmvc:4.1.5.RELEASE',
-            'org.slf4j:slf4j-api:1.7.10'
-    )
-    providedCompile(
-            'javax.servlet:javax.servlet-api:3.1.0',
-    )
-    runtime(
-            'log4j:log4j:1.2.17',
-            'org.slf4j:jcl-over-slf4j:1.7.10',
-            'org.slf4j:slf4j-log4j12:1.7.10'
-    )
-    testCompile(
-            'junit:junit:4.12',
-            'org.springframework:spring-test:4.1.5.RELEASE'
-    )
+  compile 'io.baratine:baratine:1.0.0'
 }
+
+mainClassName='hello.Hello'
