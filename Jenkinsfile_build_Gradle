@@ -67,7 +67,6 @@ pipeline{
                 rtGradle.run rootDir: '/var/jenkins/gradle_app', buildFile: 'build.gradle', tasks: 'artifactoryPublish', buildInfo: buildInfo
                 rtGradle.deployer.deployArtifacts buildInfo
                 server.publishBuildInfo buildInfo
-
            }
            else {
                 def server = Artifactory.server 'artifactory'
@@ -82,8 +81,28 @@ pipeline{
           }
         }
       }
+    stage ('Deploy to Server'){
+      steps{
+         script {
+            if (env.BRANCH_NAME == 'rc' ){
+              withCredentials([string(credentialsId: 'my-pass', variable: 'password')]) {
+                sh """
+                  mkdir ${rc_server}${env.BUILD_NUMBER} && \
+                  curl -u admin:${password} -O ${artifactory_server}${reponame}/gradle_app/unspecified/gs-gradle-unspecified.jar && \
+                  unzip /var/jenkins/gradle_app/build/libs/gs-gradle-0.1.0.jar -d ${rc_server}${env.BUILD_NUMBER}
+                """
+               }
+              }
+              else {
+                sh """
+                mkdir ${dev_server}${env.BUILD_NUMBER} && \
+                unzip /var/jenkins/gradle_app/build/libs/gs-gradle-0.1.0.jar -d ${dev_server}${env.BUILD_NUMBER}/
+              """
+              }
+            }
+         }
+      }
     }
-
  }
 
 
