@@ -11,14 +11,3 @@ public class HelloWorld {
         System.out.println(greeter.sayHello());
     }
 }
-repositories {
-    mavenLocal()
-    mavenCentral()
-}
-dependencies {
-    compile "joda-time:joda-time:2.2"
-}
-jar {
-    baseName = 'gs-gradle'
-    version =  '0.1.0'
-}
