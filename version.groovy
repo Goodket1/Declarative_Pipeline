@@ -1,12 +1,22 @@
-def URL = 'https://artifactory.legsup.co.uk/artifactory/version/com/efsavage/web_app/maven-metadata.xml'
-HttpURLConnection connection = (HttpURLConnection) baseUrl.openConnection();
-connection.addRequestProperty("Accept", "application/json")
-def basicAuth = "admin:password".getBytes().encodeBase64().toString()
-connection.addRequestProperty("Authorization", "Basic ${basicAuth}")
+@Grab(group='org.codehaus.groovy.modules.http-builder',
+      module='http-builder', version='0.5.0-RC2' )
+import groovyx.net.http.*
+import static groovyx.net.http.ContentType.*
+import static groovyx.net.http.Method.*
+import groovyx.net.http.HTTPBuilder;
+import groovy.json.JsonSlurper
 
-def metadata = new XmlSlurper().parse(URL)
-def list = []
-metadata.versioning.versions.version.each{
-  list.add(it)
-}
-return list.reverse(true)
+def basicAuth = "admin:Tf1cda11".getBytes().encodeBase64().toString()
+def baseUrl = new URL('https://artifactory.legsup.co.uk/artifactory/version/com/efsavage/web_app/maven-metadata.xml')
+HttpURLConnection connection = (HttpURLConnection) baseUrl.openConnection();
+connection.setRequestMethod("GET");
+connection.addRequestProperty("Authorization", "Basic ${basicAuth}")
+connection.connect();
+InputStream is = connection.getInputStream();
+BufferedReader bufferedReader =
+     new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        String line;
+        while ((line = bufferedReader.readLine()) != null) {
+        def metadata = new XmlSlurper().parseText(System.out)
+
+        }

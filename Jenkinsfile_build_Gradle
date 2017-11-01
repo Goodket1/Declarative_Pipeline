@@ -1,0 +1,88 @@
+pipeline{
+  agent  {
+    node {
+     label 'CI_env'
+     customWorkspace '/var/jenkins'
+    }
+   }
+  tools {
+   maven 'm3'
+    }
+    environment {
+      def server = Artifactory.server 'artifactory'
+      buildInfo = Artifactory.newBuildInfo()
+      def workspace = pwd()
+      def tomcat_path = '/opt/tomcat/webapps/ROOT/'
+      id = 'web_app'
+
+      // Repository on Artifactory
+      if
+      masterrepo ='version'
+      stagerepo ='rc'
+      devrepo = 'dev'
+
+      // Servers
+      dev_server = '/var/else/'
+      rc_server = '/var/rc/'
+      prod_server = '/var/version/'
+      http_dev_server = "http://35.194.45.43:8092/"
+      http_stage_server = 'http://35.194.45.43:8090/'
+      http_prod_server = 'http://35.194.45.43:8091'
+      artifactory_server = 'https://artifactory.legsup.co.uk/artifactory/'
+    }
+
+ stages{
+    stage('checkout SCM'){
+        steps {
+            checkout scm
+            script {
+              env.http_server = "${http_prod_server}"
+              env.sshserver = "${prod_server}"
+              env.reponame = "${masterrepo}"
+            }
+        }
+    }
+    stage ('Gradle config') {
+       steps {
+         script {
+          server = Artifactory.server 'artifactory'
+          rtGradle = Artifactory.newGradleBuild()
+          rtGradle.tool = GRADLE_TOOL // Tool name from Jenkins configuration
+          rtGradle.deployer repo: 'reponame', server: server
+          rtGradle.deployer.deployArtifacts = false // Disable artifacts deployment during Gradle run
+          buildInfo = Artifactory.newBuildInfo()
+         }
+
+
+       }
+    }
+
+
+}
+
+     stage ('Artifactory configuration') {
+        // Obtain an Artifactory server instance, defined in Jenkins --> Manage:
+        server = Artifactory.server SERVER_ID
+
+        rtGradle = Artifactory.newGradleBuild()
+        rtGradle.tool = GRADLE_TOOL // Tool name from Jenkins configuration
+        rtGradle.deployer repo: 'libs-release-local', server: server
+        rtGradle.resolver repo: 'libs-release', server: server
+        rtGradle.deployer.deployArtifacts = false // Disable artifacts deployment during Gradle run
+
+        buildInfo = Artifactory.newBuildInfo()
+    }
+
+    stage ('Test') {
+        rtGradle.run rootDir: 'gradle-examples/4/gradle-example-ci-server/', buildFile: 'build.gradle', tasks: 'clean test'
+    }
+
+    stage ('Deploy') {
+        rtGradle.run rootDir: 'gradle-examples/4/gradle-example-ci-server/', buildFile: 'build.gradle', tasks: 'artifactoryPublish', buildInfo: buildInfo
+        rtGradle.deployer.deployArtifacts buildInfo
+    }
+
+    stage ('Publish build info') {
+        server.publishBuildInfo buildInfo
+    }
+}

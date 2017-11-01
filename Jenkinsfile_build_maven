@@ -34,11 +34,7 @@ pipeline{
         steps {
             checkout scm
             script {
-              if (env.BRANCH_NAME == 'master') {
-                  env.http_server = "${http_prod_server}"
-                  env.sshserver = "${prod_server}"
-                  env.reponame = "${masterrepo}"
-              } else if ( env.BRANCH_NAME == 'rc'){
+              if ( env.BRANCH_NAME == 'rc'){
                   env.http_server = "${http_stage_server}${env.BUILD_NUMBER}"
                   env.sshserver = "${rc_server}"
                   env.reponame = "${stagerepo}"
@@ -72,11 +68,7 @@ pipeline{
       steps{
        dir( 'app' ) {
         script {
-           if (env.BRANCH_NAME == 'master' ){
-                input 'Do you approve  publish to PROD?'
-
-           }
-           else if (env.BRANCH_NAME == 'rc' ){
+           if (env.BRANCH_NAME == 'rc' ){
                 def server = Artifactory.server 'artifactory'
                 def rtMaven = Artifactory.newMavenBuild()
                 rtMaven.deployer server: server, releaseRepo: reponame, snapshotRepo: reponame
@@ -102,16 +94,7 @@ pipeline{
       steps{
        dir( '/var/' ) {
          script {
-              if (env.BRANCH_NAME == 'master' ){
-//               withCredentials([string(credentialsId: 'my-pass', variable: 'password')]) {
-                sh """
-                  mkdir ${prod_server}${env.BUILD_NUMBER} && \
-                  curl -u admin:Tf1cda11 -O ${artifactory_server}${reponame}/com/efsavage/${id}/${version}/${id}-${version}.war && \
-                  unzip ${id}-${version}.war -d ${prod_server}${env.BUILD_NUMBER}
-                 """
-//               }
-              }
-              else if (env.BRANCH_NAME == 'rc' ){
+            if (env.BRANCH_NAME == 'rc' ){
               withCredentials([string(credentialsId: 'my-pass', variable: 'password')]) {
                 sh """
                   mkdir ${rc_server}${env.BUILD_NUMBER} && \
@@ -133,11 +116,7 @@ pipeline{
     stage ('Test URL '){
       steps{
          script {
-              if (env.BRANCH_NAME == 'master' ){
-                 def response = httpRequest env.http_server
-                 println("Status: "+response.status)
-              }
-              else if (env.BRANCH_NAME == 'rc' ){
+               if (env.BRANCH_NAME == 'rc' ){
                  def response = httpRequest env.http_server
                  println("Status: "+response.status)
                  input 'Is build succeed?'
