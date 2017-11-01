@@ -89,7 +89,7 @@ pipeline{
                 sh """
                   mkdir ${rc_server}${env.BUILD_NUMBER} && \
                   curl -u admin:${password} -O ${artifactory_server}${reponame}/gradle_app/unspecified/gs-gradle-unspecified.jar && \
-                  unzip /var/jenkins/gradle_app/build/libs/gs-gradle-0.1.0.jar -d ${rc_server}${env.BUILD_NUMBER}
+                  unzip gs-gradle-unspecified.jar -d ${rc_server}${env.BUILD_NUMBER}
                 """
                }
               }

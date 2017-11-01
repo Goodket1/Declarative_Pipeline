@@ -56,7 +56,7 @@ pipeline{
             sh """
               rm -r ${prod_server}*&& \
                   curl -u admin:${password} -O ${artifactory_server}${reponame}/gradle_app/unspecified/gs-gradle-unspecified.jar && \
-              unzip ${id}-${version}.war -d ${prod_server}
+              unzip gs-gradle-unspecified.jar -d ${prod_server}
               """
               }
               }
