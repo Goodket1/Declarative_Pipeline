@@ -119,9 +119,8 @@ pipeline{
                     'buildNumber'        : buildInfo.number,
                     'targetRepo'         : 'version_gradle',
                     'comment'            : 'this is the promotion comment',
-                    'sourceRepo'         : ${stagerepo},
-//                    'status'             : 'Released',
-//                    'includeDependencies': true,
+                    'sourceRepo'         : stagerepo,
+                    'includeDependencies': true,
                     'copy'               : true
                  ]
                  server.promote promotionConfig
