@@ -1,4 +1,4 @@
-lspipeline{
+pipeline{
    agent  {
     node {
      label 'CI_env'
