@@ -79,7 +79,7 @@ pipeline{
 //                def pom = readMavenPom file: 'pom.xml'
 //                id = pom.artifactId
 //                version = pom.version
-                rtGradle.run rootDir: "${workspace}", buildFile: 'build.gradle', tasks: 'clean test'
+                rtGradle.run rootDir: "${workspace}gradle_app/", buildFile: 'build.gradle', tasks: 'clean test'
 
           }
           }
