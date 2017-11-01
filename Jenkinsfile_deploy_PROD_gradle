@@ -50,7 +50,6 @@ pipeline{
           }
     stage ('Deploy to Server'){
       steps{
-       dir( '/var/' ) {
          script {
            withCredentials([string(credentialsId: 'my-pass', variable: 'password')]) {
             sh """
@@ -60,7 +59,6 @@ pipeline{
               """
               }
               }
-            }
          }
       }
     stage ('Test URL '){
