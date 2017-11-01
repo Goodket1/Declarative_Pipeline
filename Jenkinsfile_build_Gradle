@@ -113,22 +113,23 @@ pipeline{
                  def rtGradle = Artifactory.newGradleBuild()
                  rtGradle.deployer repo: reponame, server: server
                  rtGradle.tool = 'g4'
-                 rtGradle.run rootDir: "/var/jenkins/gradle_app", buildFile: 'build.gradle', tasks: 'clean test'
+                 rtGradle.run rootDir: "/var/jenkins/gradle_app", buildFile: 'build.gradle', tasks: 'clean'
                  def promotionConfig = [
                     'buildName'          : buildInfo.name,
                     'buildNumber'        : buildInfo.number,
                     'targetRepo'         : 'version_gradle',
                     'comment'            : 'this is the promotion comment',
-                    'sourceRepo'         : 'rc_gradle',
-                    'status'             : 'Released',
-                    'includeDependencies': true,
+                    'sourceRepo'         : ${stagerepo},
+//                    'status'             : 'Released',
+//                    'includeDependencies': true,
                     'copy'               : true
                  ]
                  server.promote promotionConfig
               }
               else {
-                 def response = httpRequest env.http_server
+//                 def response = httpRequest env.http_server
 //                 println("Status: "+response.status)
+                echo "test passed "
               }
          }
       }
