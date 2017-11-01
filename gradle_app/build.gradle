@@ -1,11 +1,11 @@
-gretty {
-    integrationTestTask = 'test'
-}
 
 plugins {
     id 'java'
     id 'war'
     id 'org.akhikhl.gretty' version '1.4.2'
+}
+gretty {
+    integrationTestTask = 'test'
 }
 
 repositories {
