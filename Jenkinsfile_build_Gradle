@@ -81,7 +81,7 @@ pipeline{
           }
         }
       }
-    stage ('Deploy to Server'){
+    stage ('Test artifact'){
       steps{
          script {
             if (env.BRANCH_NAME == 'rc' ){
@@ -94,21 +94,16 @@ pipeline{
                }
               }
               else {
-                sh """
-                mkdir ${dev_server}${env.BUILD_NUMBER} && \
-                unzip /var/jenkins/gradle_app/build/libs/gs-gradle-0.1.0.jar -d ${dev_server}${env.BUILD_NUMBER}/
-              """
+                rtGradle.tool = 'g4'
+                rtGradle.run rootDir: "/var/jenkins/gradle_app", buildFile: 'build.gradle', tasks: 'test'
               }
             }
          }
       }
-    stage ('Test URL '){
+    stage ('Deploy to Version'){
       steps{
+         when { branch 'rc' }
          script {
-               if (env.BRANCH_NAME == 'rc' ){
-//                 def response = httpRequest env.http_server
-//                 println("Status: "+response.status)
- //                input 'Is build succeed?'
                  def server = Artifactory.server 'artifactory'
                  def rtGradle = Artifactory.newGradleBuild()
                  rtGradle.deployer repo: reponame, server: server
@@ -124,11 +119,6 @@ pipeline{
                     'copy'               : true
                  ]
                  server.promote promotionConfig
-              }
-              else {
-//                 def response = httpRequest env.http_server
-//                 println("Status: "+response.status)
-                echo "test passed "
               }
          }
       }
