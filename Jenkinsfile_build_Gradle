@@ -76,10 +76,10 @@ pipeline{
                 rtGradle.deployer server: server, releaseRepo: reponame, snapshotRepo: reponame
                 rtGradle.deployer.deployArtifacts = false
                 buildInfo  = Artifactory.newBuildInfo()
-                def pom = readMavenPom file: 'pom.xml'
-                id = pom.artifactId
-                version = pom.version
-                rtGradle.run rootDir: 'gradle-examples/4/gradle-example-ci-server/', buildFile: 'build.gradle', tasks: 'clean test'
+//                def pom = readMavenPom file: 'pom.xml'
+//                id = pom.artifactId
+//                version = pom.version
+                rtGradle.run rootDir: "${workspace}", buildFile: 'build.gradle', tasks: 'clean test'
 
           }
           }
