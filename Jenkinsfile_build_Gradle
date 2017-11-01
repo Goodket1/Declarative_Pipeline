@@ -120,7 +120,7 @@ pipeline{
                     'targetRepo'         : 'version_gradle',
                     'comment'            : 'this is the promotion comment',
                     'sourceRepo'         : stagerepo,
-                    'includeDependencies': true,
+//                    'includeDependencies': true,
                     'copy'               : true
                  ]
                  server.promote promotionConfig

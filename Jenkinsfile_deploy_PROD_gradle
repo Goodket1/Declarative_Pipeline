@@ -6,15 +6,10 @@ lspipeline{
     }
    }
 
- tools {
-   maven 'm3'
-    }
     environment {
       def server = Artifactory.server 'artifactory'
-      buildInfo = Artifactory.newBuildInfo()
       def workspace = pwd()
       def tomcat_path = '/opt/tomcat/webapps/ROOT/'
-      id = 'web_app'
 
       // Repository on Artifactory
       masterrepo ='version'
@@ -41,14 +36,6 @@ lspipeline{
             }
         }
     }
-   stage ("initialize") {
-      steps {
-        sh '''
-            echo "PATH = ${PATH}"
-            echo "M2_HOME = ${M2_HOME}"
-            '''
-        }
-    }
 
     stage('SonarQube analysis') {
        steps {
@@ -58,11 +45,9 @@ lspipeline{
 
     stage (' approve  publish to PROD? '){
       steps{
-       dir( 'app' ) {
          input 'Do you approve  publish to PROD?'
            }
           }
-        }
     stage ('Deploy to Server'){
       steps{
        dir( '/var/' ) {
@@ -70,7 +55,7 @@ lspipeline{
            withCredentials([string(credentialsId: 'my-pass', variable: 'password')]) {
             sh """
               rm -r ${prod_server}*&& \
-              curl -u admin:Tf1cda11 -O ${artifactory_server}${reponame}/com/efsavage/${id}/${version}/${id}-${version}.war && \
+                  curl -u admin:${password} -O ${artifactory_server}${reponame}/gradle_app/unspecified/gs-gradle-unspecified.jar && \
               unzip ${id}-${version}.war -d ${prod_server}
               """
               }
