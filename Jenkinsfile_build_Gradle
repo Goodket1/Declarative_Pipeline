@@ -56,7 +56,7 @@ pipeline{
 
     stage (' Build '){
       steps{
-       dir( 'app' ) {
+       dir( 'gradle_app' ) {
         script {
            if (env.BRANCH_NAME == 'rc' ){
                 def server = Artifactory.server 'artifactory'
