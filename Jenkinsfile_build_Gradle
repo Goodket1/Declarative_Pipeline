@@ -117,6 +117,7 @@ pipeline{
       when { branch 'rc' }
         steps{
            script {
+                 input "Move to version ?"
                  def server = Artifactory.server 'artifactory'
                  def rtGradle = Artifactory.newGradleBuild()
                  rtGradle.deployer repo: reponame, server: server
