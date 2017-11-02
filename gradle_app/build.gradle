@@ -11,6 +11,7 @@ apply plugin: 'java'
 apply plugin: 'war'
 apply plugin: 'org.akhikhl.gretty'
 gretty {
+    httpPort = 8080
     contextPath = '/'
     servletContainer = 'jetty9'
 }
