@@ -94,6 +94,8 @@ pipeline{
                }
               }
               else {
+                def projectVersion = sh script: "gradle getVersion()", returnStdout: true
+                echo projectVersion
               sh """
                 mkdir ${dev_server}${env.BUILD_NUMBER} && \
                   cp  ${workspace}/gradle_app/build/libs/web_app-${projectVersion}.war  . && \
