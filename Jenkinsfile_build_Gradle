@@ -101,8 +101,8 @@ pipeline{
               }
               else {
                 version = "${version}".trim()+".war"
-              sh """
-                mkdir ${dev_server}${env.BUILD_NUMBER} && \
+                sh """
+                  mkdir ${dev_server}${env.BUILD_NUMBER} && \
                   cp  ${workspace}/gradle_app/build/libs/web_app-${version}  ./web_app-${version}
                   unzip web_app-${version} -d ${dev_server}${env.BUILD_NUMBER}
                 """
