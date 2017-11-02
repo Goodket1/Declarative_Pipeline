@@ -1,15 +1,17 @@
-buildscript {
-    dependencies {
-        classpath 'org.akhikhl.gretty:gretty:+'
-    }
-    repositories {
-        jcenter()
-    }
-}
-
 apply plugin: 'java'
 apply plugin: 'war'
 apply plugin: 'org.akhikhl.gretty'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    jcenter()
+}
+dependencies {
+        classpath 'org.akhikhl.gretty:gretty:+'
+    }
+
+
 gretty {
     httpPort = 8080
     contextPath = '/'
