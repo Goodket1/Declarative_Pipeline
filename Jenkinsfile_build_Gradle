@@ -56,7 +56,7 @@ pipeline{
 
     stage (' Build '){
       steps{
-       dir ("${workspace}/${env.BUILD_NUMBER}}") {
+       dir ("${workspace}") {
         script {
            if (env.BRANCH_NAME == 'rc' ){
                 def server = Artifactory.server 'artifactory'
