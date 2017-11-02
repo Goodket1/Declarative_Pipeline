@@ -44,11 +44,11 @@ pipeline{
     stage ('Deploy to Server'){
       steps{
          script {
-           def version = '0.0.9'
+           def version = '0.0.7'
            withCredentials([string(credentialsId: 'my-pass', variable: 'password')]) {
              sh """
-               mkdir ${old_release}\${env.BUILD_NUMBER} && \
-               mv ${prod_server}* ${old_release}\${env.BUILD_NUMBER} && \
+               mkdir ${old_release}${env.BUILD_NUMBER} && \
+               mv ${prod_server}* ${old_release}/${env.BUILD_NUMBER} && \
                curl -u admin:${password} -O ${artifactory_server}${reponame}/com/efsavage/web_app/${version}/web_app-${version}.war && \
                unzip web_app-${version}.war -d ${prod_server}
              """
