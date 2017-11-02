@@ -1,17 +1,44 @@
-apply plugin: 'java'
-apply plugin: 'maven'
-apply plugin: 'war'
-group = 'com.efsavage'
-version = '0.0.4'
+buildscript {
+    repositories {
+        jcenter()
+        
+    }
+    dependencies {
+        //Check for the latest version here: http://plugins.gradle.org/plugin/com.jfrog.artifactory
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4+"
+    }
+}
 
-description = """Hello World Web Application Repository"""
+allprojects {
+    apply plugin: "com.jfrog.artifactory"
+}
 
-sourceCompatibility = 1.5
-targetCompatibility = 1.5
-
-
-
-repositories {
-
-     maven { url "http://repo.maven.apache.org/maven2" }
+artifactory {
+    contextUrl = "${artifactory_contextUrl}"   //The base Artifactory URL if not overridden by the publisher/resolver
+    publish {
+        repository {
+            repoKey = 'rc_gradle'
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+            maven = true
+            ivy {
+                ivyLayout = '[organization]/[module]/[revision]/[module]-[revision](-[classifier]).pom'
+                artifactLayout = '[organization]/[module]/[revision]/[module]-[revision](-[classifier]).[ext]'
+                mavenCompatible = true
+            }
+        }
+    }
+    resolve {
+        repository {
+            repoKey = 'test'
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+            maven = true
+            ivy {
+                ivyLayout = '[organization]/[module]/[revision]/[type]s/ivy-[revision].xml'
+                artifactLayout = '[organization]/[module]/[revision]/[type]s/[module](-[classifier])-[revision].[ext]'
+                mavenCompatible = false
+            }
+        }
+    }
 }
