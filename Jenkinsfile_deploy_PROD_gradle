@@ -2,7 +2,7 @@ pipeline{
    agent  {
     node {
      label 'CI_env'
-     customWorkspace '/var/jenkins'
+     customWorkspace "/var/jenkins/${env.BUILD_NUMBER}"
     }
    }
 
@@ -13,15 +13,10 @@ pipeline{
 
       // Repository on Artifactory
       masterrepo ='version_gradle'
-      stagerepo ='rc'
-      devrepo = 'dev'
 
       // Servers
-      dev_server = '/var/else/'
-      rc_server = '/var/rc/'
       prod_server = '/var/version/'
-      http_dev_server = "http://35.194.45.43:8092/"
-      http_stage_server = 'http://35.194.45.43:8090/'
+      old_release = '/var/oldrelease/'
       http_prod_server = 'http://35.194.45.43:8091'
       artifactory_server = 'https://artifactory.legsup.co.uk/artifactory/'
     }
@@ -36,13 +31,11 @@ pipeline{
             }
         }
     }
-
     stage('SonarQube analysis') {
        steps {
          sh "echo OK"
        }
     }
-
     stage (' approve  publish to PROD? '){
       steps{
          input 'Do you approve  publish to PROD?'
@@ -50,15 +43,17 @@ pipeline{
           }
     stage ('Deploy to Server'){
       steps{
-       dir( '/var/jenkins/' ) {
          script {
+           def version = '0.0.9'
            withCredentials([string(credentialsId: 'my-pass', variable: 'password')]) {
-            sh """
-              rm -r ${prod_server}* && \
-                  curl -u admin:${password} -O ${artifactory_server}${reponame}/gradle_app/unspecified/gs-gradle-unspecified.jar && \
-              unzip gs-gradle-unspecified.jar -d ${prod_server}
-              """
-              }
+             sh """
+               mkdir ${old_release}\${env.BUILD_NUMBER} && \
+               mv ${prod_server}* ${old_release}\${env.BUILD_NUMBER} && \
+               curl -u admin:${password} -O ${artifactory_server}${reponame}/com/efsavage/web_app/${version}/web_app-${version}.war && \
+               unzip web_app-${version}.war -d ${prod_server}
+             """
+                def response = httpRequest http_server
+                println("Status: "+response.status)
               }
             }
          }
@@ -72,6 +67,11 @@ pipeline{
          }
       }
     }
+  post {
+   success {
+     echo "Show result on ${http_server}"
+     }
  }
+}
 
 
