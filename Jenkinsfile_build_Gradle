@@ -61,8 +61,9 @@ pipeline{
                 rtGradle.deployer repo: reponame, server: server
                 rtGradle.deployer.deployArtifacts = false
                 buildInfo  = Artifactory.newBuildInfo()
-//                rtGradle.run rootDir: "/var/jenkins/gradle_app", buildFile: 'build.gradle', tasks: 'clean test'
-//                buildInfo = Artifactory.newBuildInfo()
+                rtGradle.run rootDir: "/var/jenkins/gradle_app", buildFile: 'build.gradle', tasks: 'clean test'
+
+                buildInfo = Artifactory.newBuildInfo()
                 rtGradle.run rootDir: '/var/jenkins/gradle_app', buildFile: 'build.gradle', tasks: 'artifactoryPublish', buildInfo: buildInfo
                 rtGradle.deployer.deployArtifacts buildInfo
                 server.publishBuildInfo buildInfo
@@ -87,21 +88,19 @@ pipeline{
               withCredentials([string(credentialsId: 'my-pass', variable: 'password')]) {
                 sh """
                   mkdir ${rc_server}${env.BUILD_NUMBER} && \
-                  curl -u admin:${password} -O ${artifactory_server}${reponame}rc_gradle/com/efsavage/web_app/0.0.4/web_app-0.0.4.war && \
-                  unzip web_app-0.0.4.war -d ${rc_server}${env.BUILD_NUMBER}
+                  curl -u admin:${password} -O ${artifactory_server}${reponame}/gradle_app/unspecified/gs-gradle-unspecified.jar && \
+                  unzip gs-gradle-unspecified.jar -d ${rc_server}${env.BUILD_NUMBER}
                 """
-//                 def response = httpRequest env.http_server
-//                 println("Status: "+response.status)
                }
               }
               else {
+                def projectVersion = sh script: "gradle getVersion()", returnStdout: true
+                echo projectVersion
               sh """
                 mkdir ${dev_server}${env.BUILD_NUMBER} && \
-                  cp  ${workspace}/gradle_app/build/libs/web_app-0.0.4.war  . && \
-                  unzip web_app-0.0.4.war -d ${dev_server}${env.BUILD_NUMBER}
+                  cp  ${workspace}/gradle_app/build/libs/web_app-${projectVersion}.war  . && \
+                  unzip web_app-${projectVersion}.war -d ${dev_server}${env.BUILD_NUMBER}
                 """
-//                 def response = httpRequest env.http_server
-//                 println("Status: "+response.status)
               }
             }
          }

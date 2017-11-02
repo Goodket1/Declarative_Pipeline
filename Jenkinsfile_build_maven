@@ -27,6 +27,7 @@ pipeline{
       http_stage_server = 'http://35.194.45.43:8090/'
       http_prod_server = 'http://35.194.45.43:8091'
       artifactory_server = 'https://artifactory.legsup.co.uk/artifactory/'
+
     }
  stages{
     stage('checkout SCM'){
