@@ -61,9 +61,8 @@ pipeline{
                 rtGradle.deployer repo: reponame, server: server
                 rtGradle.deployer.deployArtifacts = false
                 buildInfo  = Artifactory.newBuildInfo()
-                rtGradle.run rootDir: "/var/jenkins/gradle_app", buildFile: 'build.gradle', tasks: 'clean test'
-
-                buildInfo = Artifactory.newBuildInfo()
+//                rtGradle.run rootDir: "/var/jenkins/gradle_app", buildFile: 'build.gradle', tasks: 'clean test'
+//                buildInfo = Artifactory.newBuildInfo()
                 rtGradle.run rootDir: '/var/jenkins/gradle_app', buildFile: 'build.gradle', tasks: 'artifactoryPublish', buildInfo: buildInfo
                 rtGradle.deployer.deployArtifacts buildInfo
                 server.publishBuildInfo buildInfo
