@@ -1,14 +1,14 @@
-apply plugin: 'java'
-apply plugin: 'war'
-apply plugin: 'org.akhikhl.gretty'
 
 repositories {
     mavenLocal()
     mavenCentral()
     jcenter()
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
 }
 dependencies {
-        classpath 'org.akhikhl.gretty:gretty:+'
+       classpath "gradle.plugin.org.akhikhl.gretty:gretty:2.0.0"
     }
 
 
@@ -17,3 +17,7 @@ gretty {
     contextPath = '/'
     servletContainer = 'jetty9'
 }
+
+apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'org.akhikhl.gretty'
