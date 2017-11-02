@@ -1,9 +1,9 @@
 buildscript {
-    repositories {
-        jcenter()
-    }
     dependencies {
         classpath 'org.akhikhl.gretty:gretty:+'
+    }
+    repositories {
+        jcenter()
     }
 }
 
