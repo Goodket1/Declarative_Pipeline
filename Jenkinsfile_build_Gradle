@@ -16,6 +16,7 @@ pipeline{
       stagerepo ='rc_gradle'
       devrepo = 'dev'
 
+
       // Servers
       dev_server = '/var/else/'
       rc_server = '/var/rc/'
@@ -95,9 +96,10 @@ pipeline{
               }
               else {
               sh """
+                version = cat build.gradle | grep version | cut -d"'" -f2 | cut -d"'" -f1
                 mkdir ${dev_server}${env.BUILD_NUMBER} && \
-                  cp  ${workspace}/gradle_app/build/libs/web_app-${projectVersion}.war  . && \
-                  unzip web_app-${projectVersion}.war -d ${dev_server}${env.BUILD_NUMBER}
+                  cp  ${workspace}/gradle_app/build/libs/web_app-${version}.war  . && \
+                  unzip web_app-${version}.war -d ${dev_server}${env.BUILD_NUMBER}
                 """
               }
             }
