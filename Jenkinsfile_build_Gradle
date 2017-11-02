@@ -97,7 +97,7 @@ pipeline{
               sh """
                 mkdir ${dev_server}${env.BUILD_NUMBER} && \
                   cp  ${workspace}gradle_app/build/libs/web_app-0.0.4.war  . && \
-                  unzip web_app-0.0.4.war -d ${rc_server}${env.BUILD_NUMBER}
+                  unzip web_app-0.0.4.war -d ${dev_server}${env.BUILD_NUMBER}
                 """
               }
             }
