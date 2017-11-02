@@ -15,7 +15,7 @@ pipeline{
       // Repository on Artifactory
       stagerepo ='rc_gradle'
       devrepo = 'dev'
-
+      def version = sh returnStdout: true, script:  "cat ${workspace}/gradle_app/build.gradle | grep version | cut -d\"'\" -f2 | cut -d\"'\" -f1"
 
       // Servers
       dev_server = '/var/else/'
@@ -26,6 +26,7 @@ pipeline{
       http_prod_server = 'http://35.194.45.43:8091'
       artifactory_server = 'https://artifactory.legsup.co.uk/artifactory/'
     }
+
  stages{
     stage('checkout SCM'){
         steps {
@@ -45,6 +46,7 @@ pipeline{
             }
         }
     }
+
     stage('SonarQube analysis') {
        when { not { branch 'master'}}
        steps {
@@ -76,14 +78,16 @@ pipeline{
                 rtGradle.deployer repo: reponame, server: server
                 rtGradle.deployer.deployArtifacts = false
                 buildInfo  = Artifactory.newBuildInfo()
-                rtGradle.run rootDir: "/var/jenkins/gradle_app", buildFile: 'build.gradle', tasks: 'clean build'
+                rtGradle.run rootDir: "gradle_app", buildFile: 'build.gradle', tasks: 'clean build'
 
           }
           }
         }
       }
+
     stage ('Test artifact'){
       steps{
+       dir ("${workspace}/${env.BUILD_NUMBER}}") {
          script {
             if (env.BRANCH_NAME == 'rc' ){
               withCredentials([string(credentialsId: 'my-pass', variable: 'password')]) {
@@ -92,18 +96,23 @@ pipeline{
                   curl -u admin:${password} -O ${artifactory_server}${reponame}/gradle_app/unspecified/gs-gradle-unspecified.jar && \
                   unzip gs-gradle-unspecified.jar -d ${rc_server}${env.BUILD_NUMBER}
                 """
+                def response = httpRequest http_server
+                println("Status: "+response.status)
                }
               }
               else {
+                version = "${version}".trim()+".war"
               sh """
-                version = cat build.gradle | grep version | cut -d"'" -f2 | cut -d"'" -f1
                 mkdir ${dev_server}${env.BUILD_NUMBER} && \
-                  cp  ${workspace}/gradle_app/build/libs/web_app-${version}.war  . && \
-                  unzip web_app-${version}.war -d ${dev_server}${env.BUILD_NUMBER}
+                  cp  ${workspace}/gradle_app/build/libs/web_app-${version}  ./web_app-${version}
+                  unzip web_app-${version} -d ${dev_server}${env.BUILD_NUMBER}
                 """
+                def response = httpRequest http_server
+                println("Status: "+response.status)
               }
             }
          }
+      }
       }
     stage ('Deploy to Version (only rc)'){
       when { branch 'rc' }
@@ -128,6 +137,11 @@ pipeline{
          }
       }
     }
-    }
+ post {
+   success {
+     echo "Show result on ${http_server}"
+     }
+ }
 
+}
 
