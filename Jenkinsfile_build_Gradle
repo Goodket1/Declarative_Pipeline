@@ -85,7 +85,7 @@ pipeline{
 
     stage ('Test artifact'){
       steps{
-       dir ("${workspace}/${env.BUILD_NUMBER}}") {
+       dir ("${workspace}") {
          script {
             if (env.BRANCH_NAME == 'rc' ){
               version = "${version}".trim()
