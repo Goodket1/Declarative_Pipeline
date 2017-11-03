@@ -38,7 +38,7 @@ pipeline{
                   env.reponame = "${stagerepo}"
                   tomcat_path = "${tomcat_path}/${BRANCH_NAME}${env.BUILD_NUMBER}"
               }else {
-                  env.http_server = "${http_dev_server}${env.BUILD_NUMBER}"
+                  env.http_server = "${http_dev_server}${env.BUILD_NUMBER}1"
                   env.sshserver = "${dev_server}"
                   env.reponame = "${devrepo}"
                   tomcat_path = "${tomcat_path}${BRANCH_NAME}${env.BUILD_NUMBER}"
